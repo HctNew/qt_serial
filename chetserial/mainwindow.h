@@ -8,6 +8,7 @@
 QT_BEGIN_NAMESPACE
 
 class QLabel;
+class QString;
 
 namespace Ui {
 class MainWindow;
@@ -31,10 +32,11 @@ private slots:
     void openSerialPort();
     void closeSerialPort();
     void about();
-    void writeData(const QByteArray &data);
     void readData();
 
     void handleError(QSerialPort::SerialPortError error);
+
+    void on_sendPushButton_clicked();
 
 private:
     void initActionsConnections();
@@ -45,8 +47,8 @@ private:
 
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;
-    Console *m_console = nullptr;
     SettingsDialog *m_settings = nullptr;
     QSerialPort *m_serial = nullptr;
+    QString m_str;
 };
 #endif // MAINWINDOW_H

@@ -5,20 +5,20 @@
 
 #include <QLabel>
 #include <QMessageBox>
+#include <QString>
 
 MainWindow::MainWindow(QWidget *parent):
       QMainWindow(parent),
       m_ui(new Ui::MainWindow),
       m_status(new QLabel),
-      m_console(new Console),
       m_settings(new SettingsDialog),
       m_serial(new QSerialPort(this))
 {
     m_ui->setupUi(this);
 
     // 失能终端，设置中心窗口对象为 m_console
-    m_console->setEnabled(false);
-    setCentralWidget(m_console);
+    m_ui->sendPlainTextEdit->setEnabled(true);
+    m_ui->recvTextEdit->setReadOnly(true);
 
     // 设置活动类控件状态
     m_ui->actionConnect->setEnabled(true);
@@ -34,8 +34,6 @@ MainWindow::MainWindow(QWidget *parent):
 
     connect(m_serial,  &QSerialPort::errorOccurred, this, &MainWindow::handleError);
     connect(m_serial,  &QSerialPort::readyRead,     this, &MainWindow::readData);
-    connect(m_console, &Console::getData,           this, &MainWindow::writeData);
-
 }
 
 MainWindow::~MainWindow()
@@ -57,10 +55,6 @@ void MainWindow::openSerialPort()
     // 以读写的方式打开
     if (m_serial->open(QIODevice::ReadWrite))
     {
-//        m_ui->sendPlainTextEdit->setEnabled(true);
-//        m_console->setLocalEchoEnabled(p.localEchoEnabled);
-        m_console->setEnabled(true);
-        m_console->setLocalEchoEnabled(p.localEchoEnabled);
 
         // 失能活动控件：connect和Configure，使能活动控件：disconnect
         m_ui->actionConnect->setEnabled(false);
@@ -79,6 +73,14 @@ void MainWindow::openSerialPort()
     }
 }
 
+void MainWindow::on_sendPushButton_clicked()
+{
+    if (m_serial->isOpen())
+    {
+        m_serial->write(m_ui->sendPlainTextEdit->toPlainText().toUtf8());
+    }
+}
+
 void MainWindow::closeSerialPort()
 {
     if (m_serial->isOpen())
@@ -86,7 +88,6 @@ void MainWindow::closeSerialPort()
         m_serial->close();
     }
 
-    m_console->setEnabled(false);
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
     m_ui->actionConfigure->setEnabled(true);
@@ -102,17 +103,22 @@ void MainWindow::about()
                           "using Qt, with a menu bar, toolbars, and a status bar."));
 }
 
-void MainWindow::writeData(const QByteArray &data)
-{
-    m_serial->write(data);
-}
 
 void MainWindow::readData()
 {
-    const QByteArray data = m_serial->readAll();
+    QByteArray data = m_serial->readAll();
 
-    m_console->putData(data);
+    if (!data.isEmpty())
+    {
+        QString str = m_ui->recvTextEdit->toPlainText().toUtf8();
+        str += tr(data);
+        m_ui->recvTextEdit->clear();
+        m_ui->recvTextEdit->append(str);
+    }
+
+    data.clear();
 }
+
 
 void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
@@ -126,16 +132,18 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 
 void MainWindow::initActionsConnections()
 {
-    connect(m_ui->actionConnect,    &QAction::triggered, this,       &MainWindow::openSerialPort);
-    connect(m_ui->actionDisconnect, &QAction::triggered, this,       &MainWindow::closeSerialPort);
-    connect(m_ui->actionQuit,       &QAction::triggered, this,       &MainWindow::close);
-    connect(m_ui->actionConfigure,  &QAction::triggered, m_settings, &SettingsDialog::show);
-    connect(m_ui->actionClear,      &QAction::triggered, m_console,  &Console::clear);
-    connect(m_ui->actionAbout,      &QAction::triggered, this,       &MainWindow::about);
-    connect(m_ui->actionAboutQt,    &QAction::triggered, qApp,       &QApplication::aboutQt);
+    connect(m_ui->actionConnect,    &QAction::triggered, this,                 &MainWindow::openSerialPort);
+    connect(m_ui->actionDisconnect, &QAction::triggered, this,                 &MainWindow::closeSerialPort);
+    connect(m_ui->actionQuit,       &QAction::triggered, this,                 &MainWindow::close);
+    connect(m_ui->actionConfigure,  &QAction::triggered, m_settings,           &SettingsDialog::show);
+    connect(m_ui->actionClear,      &QAction::triggered, m_ui->recvTextEdit,   &QTextEdit::clear);
+    connect(m_ui->actionAbout,      &QAction::triggered, this,                 &MainWindow::about);
+    connect(m_ui->actionAboutQt,    &QAction::triggered, qApp,                 &QApplication::aboutQt);
 }
 
 void MainWindow::showStatusMessage(const QString &message)
 {
     m_status->setText(message);
 }
+
+

@@ -163,6 +163,9 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QCheckBox" name="localEchoCheckBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="text">
          <string>Local echo</string>
         </property>

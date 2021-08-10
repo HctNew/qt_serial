@@ -16,6 +16,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     // 设置UI，里面的配置就是settingsdialog.ui文件生成的ui_settingdialog.h里的class方法
     m_ui->setupUi(this);
 
+    // 暂时用不到local echo
+    m_ui->localEchoCheckBox->setEnabled(false);
+    m_ui->localEchoCheckBox->setCheckable(false);
+
     // 选择插入Box策略：输入字符串不插入到Box下拉列表中
     m_ui->baudRateBox->setInsertPolicy(QComboBox::NoInsert);
 
@@ -140,8 +144,6 @@ void SettingsDialog::fillPortsInfo()
         //将串口名 list.first()即info.protName()添加到Box下来列表
         m_ui->serialPortInfoListBox->addItem(list.first(), list);
     }
-
-    //m_ui->serialPortInfoListBox->addItem(tr("Custom"));
 }
 
 void SettingsDialog::updateSettings()
@@ -190,5 +192,5 @@ void SettingsDialog::updateSettings()
     m_currentSettings.stringFlowControl = m_ui->flowControlBox->currentText();
 
     /********************************** 7、本地回显 ********************************************/
-    m_currentSettings.localEchoEnabled = m_ui->localEchoCheckBox->isCheckable();
+    //m_currentSettings.localEchoEnabled = m_ui->localEchoCheckBox->isChecked();
 }

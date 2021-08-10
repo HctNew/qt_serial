@@ -16,11 +16,11 @@ public:
     void putData(const QByteArray &data);
     void setLocalEchoEnabled(bool set);
 
-protected:
-    void keyPressEvent(QKeyEvent *e) override;
-    void mousePressEvent(QMouseEvent *e) override;
-    void mouseDoubleClickEvent(QMouseEvent *e) override;
-    void contextMenuEvent(QContextMenuEvent *e) override;
+//protected:
+//    void keyPressEvent(QKeyEvent *e) override;
+//    void mousePressEvent(QMouseEvent *e) override;
+//    void mouseDoubleClickEvent(QMouseEvent *e) override;
+//    void contextMenuEvent(QContextMenuEvent *e) override; // 右键菜单
 
 private:
     bool m_localEchoEnaled = false;
