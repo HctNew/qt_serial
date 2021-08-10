@@ -79,6 +79,9 @@
    </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="selectBox">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="title">
       <string>Select Serial Port</string>
      </property>

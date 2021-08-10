@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QString>
 
+
 MainWindow::MainWindow(QWidget *parent):
       QMainWindow(parent),
       m_ui(new Ui::MainWindow),
@@ -15,6 +16,9 @@ MainWindow::MainWindow(QWidget *parent):
       m_serial(new QSerialPort(this))
 {
     m_ui->setupUi(this);
+
+    // 设置串口配置窗口为半模态，类似于置顶
+    m_settings->setWindowModality(Qt::ApplicationModal);
 
     // 失能终端，设置中心窗口对象为 m_console
     m_ui->sendPlainTextEdit->setEnabled(true);

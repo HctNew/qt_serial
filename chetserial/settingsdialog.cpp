@@ -64,6 +64,8 @@ void SettingsDialog::showPortInfo(int idx)
 void SettingsDialog::apply()
 {
     updateSettings();
+
+    // 只是将Dialog隐藏起来，并没有像close()函数那样析构对象
     hide();
 }
 
