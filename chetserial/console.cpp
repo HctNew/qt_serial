@@ -1,25 +1,54 @@
 #include "console.h"
 
 #include <QScrollBar>
+#include <QMenu>
+#include <QAction>
+#include <QContextMenuEvent>
+#include <QMessageBox>
+
 
 Console::Console(QWidget *parent) :
-    QPlainTextEdit(parent)
+    QTextEdit(parent)
 {
     // 最大行数限制，超过的将从最前面重新开始
     document()->setMaximumBlockCount(100);
 
-
-//    QPalette p = palette();                 // 获取当前面板属性
-//    p.setColor(QPalette::Base, Qt::black);  // 设置输入文本框背景色
-//    p.setColor(QPalette::Text, Qt::white);  // 设置输入文本框前景色
-//    setPalette(p);                          // 设置面板属性
+    initContextMenu();
 }
 
 
-void Console::putData(const QByteArray &data)
+
+void Console::readData(const QByteArray &data)
 {
+    if (data.isEmpty()) return;
+
+    QString strDis;
+
+    // 使用十六进制显示
+    if (m_hexModeSet == true)
+    {
+
+        QString strHex = data.toHex().data();   // 转化为HEX字符串
+        strHex = strHex.toUpper();              // HEX字符串大写
+
+        // HEX之间使用空格隔开
+        for(int i=0; i<strHex.length(); i+=2)
+        {
+            QString st = strHex.mid(i,2);
+            strDis += st;
+            strDis += " ";
+        }
+
+//        strDis = QString(data.toHex(' ').toUpper().append(' '));
+
+    }
+    else
+    {
+        strDis = tr(data);
+    }
+
     // 把数据插入到文本框中
-    insertPlainText(data);
+    insertPlainText(strDis);
 
 
     // 垂直滚动条保持在最下方
@@ -27,23 +56,29 @@ void Console::putData(const QByteArray &data)
     bar->setValue(bar->maximum());
 }
 
+
 void Console::setLocalEchoEnabled(bool set)
 {
     m_localEchoEnaled = set;
 }
 
-//void Console::keyPressEvent(QKeyEvent *e)
-//{
+void Console::initContextMenu()
+{
+    //默认的标准右键菜单，如果不需要刻意完全自己实现
+    m_menu = createStandardContextMenu();
 
-//    // 如果设置了本地回显，那么则显示键盘输入的字符
-//    if (m_localEchoEnaled)
-//    {
-//        QPlainTextEdit::keyPressEvent(e);
-//    }
+    QAction *hexMenuItem = m_menu->addAction(tr("HEX Mode"));
+    hexMenuItem->setChecked(false);
+    hexMenuItem->setCheckable(true);
 
-//    // 将键盘输入的字符传进信号形参，然后发送可以获取数据的信号
-//    emit getData(e->text().toLocal8Bit());
+    connect(hexMenuItem, &QAction::triggered, this, &Console::setHexModeEnable);
+}
 
-//}
+void Console::contextMenuEvent(QContextMenuEvent *e)
+{
+    m_menu->exec(e->globalPos());
+}
+
+
 
 

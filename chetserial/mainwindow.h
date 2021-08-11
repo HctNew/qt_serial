@@ -42,8 +42,14 @@ private:
     void initActionsConnections();
 
 private:
-    void showStatusMessage(const QString &message);
+    void showStatusMessage(const QString &message,
+                           const QString& styleSheet  = QStringLiteral("Color:black"));
 
+    QByteArray str2Hex(const QString & str);
+    char convertHexChar(char ch);
+    QString formatInput(const QString& hexStr);
+
+private:
 
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;

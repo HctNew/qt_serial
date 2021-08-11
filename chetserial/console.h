@@ -1,29 +1,44 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <QPlainTextEdit>
+#include <QTextEdit>
 
-class Console : public QPlainTextEdit
+QT_BEGIN_NAMESPACE
+
+class QAction;
+
+QT_END_NAMESPACE
+
+class Console : public QTextEdit
 {
     Q_OBJECT
 
 signals:
     void getData(const QByteArray &data);
 
+private slots:
+    void setHexModeEnable(bool bSet) { m_hexModeSet = bSet; };
+
 public:
     explicit Console(QWidget *parent = nullptr);
 
-    void putData(const QByteArray &data);
+    void readData(const QByteArray &data);
     void setLocalEchoEnabled(bool set);
-
-//protected:
-//    void keyPressEvent(QKeyEvent *e) override;
-//    void mousePressEvent(QMouseEvent *e) override;
-//    void mouseDoubleClickEvent(QMouseEvent *e) override;
-//    void contextMenuEvent(QContextMenuEvent *e) override; // 右键菜单
+    bool isHexMode(void) { return m_hexModeSet; };
 
 private:
+    void initContextMenu();
+
+protected:
+    void contextMenuEvent(QContextMenuEvent *e) override; // 右键菜单
+
+private:
+    bool m_hexModeSet = false;
     bool m_localEchoEnaled = false;
+    bool m_isHexSend = false;
+    bool m_isHexRecv = false;
+    QMenu *m_menu = nullptr;
+
 };
 
 #endif // CONSOLE_H

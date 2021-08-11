@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent):
     m_settings->setWindowModality(Qt::ApplicationModal);
 
     // 失能终端，设置中心窗口对象为 m_console
-    m_ui->sendPlainTextEdit->setEnabled(true);
+    m_ui->sendTextEdit->setEnabled(true);
     m_ui->recvTextEdit->setReadOnly(true);
 
     // 设置活动类控件状态
@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent):
 
     // 暂时不知道怎么用的
     m_ui->statusBar->addWidget(m_status);
+
 
     //初始化菜单栏活动类控件的信号槽
     initActionsConnections();
@@ -67,13 +68,15 @@ void MainWindow::openSerialPort()
 
         showStatusMessage(tr("Connected to %1: %2, %3, %4, %5, %6")
                           .arg(p.name).arg(p.stringbaudRate).arg(p.stringDataBits)
-                          .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl));
+                          .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl),
+                          QStringLiteral("Color:green"));
     }
     else
     {
         QMessageBox::critical(this, tr("Error"), m_serial->errorString());
 
-        showStatusMessage(tr("Open error"));
+        showStatusMessage(tr("Open error"), QStringLiteral("Color:red"));
+
     }
 }
 
@@ -81,7 +84,15 @@ void MainWindow::on_sendPushButton_clicked()
 {
     if (m_serial->isOpen())
     {
-        m_serial->write(m_ui->sendPlainTextEdit->toPlainText().toUtf8());
+        if (m_ui->sendTextEdit->isHexMode())
+        {
+            m_serial->write(str2Hex( formatInput(m_ui->sendTextEdit->toPlainText().toUtf8()) ) );
+        }
+        else
+        {
+            m_serial->write(m_ui->sendTextEdit->toPlainText().toUtf8());
+        }
+
     }
 }
 
@@ -111,14 +122,7 @@ void MainWindow::about()
 void MainWindow::readData()
 {
     QByteArray data = m_serial->readAll();
-
-    if (!data.isEmpty())
-    {
-        QString str = m_ui->recvTextEdit->toPlainText().toUtf8();
-        str += tr(data);
-        m_ui->recvTextEdit->clear();
-        m_ui->recvTextEdit->append(str);
-    }
+    m_ui->recvTextEdit->readData(data);
 
     data.clear();
 }
@@ -145,9 +149,74 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionAboutQt,    &QAction::triggered, qApp,                 &QApplication::aboutQt);
 }
 
-void MainWindow::showStatusMessage(const QString &message)
+
+void MainWindow::showStatusMessage(const QString &message, const QString& styleSheet)
 {
+    m_status->setStyleSheet(styleSheet);
     m_status->setText(message);
 }
 
+QByteArray MainWindow::str2Hex(const QString & str)
+{
+    QByteArray senddata;
+    int hexdata,lowhexdata;
+    int hexdatalen = 0;
+    int len = str.length();
+
+    senddata.resize(len/2);
+    char lstr,hstr;
+
+    for(int i=0; i<len; )
+    {
+        hstr=str[i].toLatin1();
+        if(hstr == ' ')
+        {
+            i++;
+            continue;
+        }
+        i++;
+        if(i >= len)
+            break;
+        lstr = str[i].toLatin1();
+        hexdata = convertHexChar(hstr);
+        lowhexdata = convertHexChar(lstr);
+        if((hexdata == 16) || (lowhexdata == 16))
+            break;
+        else
+            hexdata = hexdata*16+lowhexdata;
+        i++;
+        senddata[hexdatalen] = (char)hexdata;
+        hexdatalen++;
+    }
+    senddata.resize(hexdatalen);
+    return senddata;
+}
+
+char MainWindow::convertHexChar(char ch)
+{
+    if((ch >= '0') && (ch <= '9'))
+        return ch-0x30;
+    else if((ch >= 'A') && (ch <= 'F'))
+        return ch-'A'+10;
+    else if((ch >= 'a') && (ch <= 'f'))
+        return ch-'a'+10;
+    else return (-1);
+}
+
+
+QString MainWindow::formatInput(const QString& hexStr)
+{
+    int strlen = hexStr.length();
+    QString tmp = hexStr;
+
+    //将输入格式化，补满四位：0XFF
+    if (strlen%2 != 0)
+    {
+        QString startStr = hexStr.left(strlen-1);
+        QString endStr = hexStr.right(1);
+        tmp = startStr + "0" + endStr;
+    }
+
+    return tmp;
+}
 
