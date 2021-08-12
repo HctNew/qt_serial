@@ -38,16 +38,24 @@ private slots:
 
     void on_sendPushButton_clicked();
 
+
 private:
     void initActionsConnections();
 
 private:
+    enum
+    {
+        ShowReadData,
+        ShowWriteData
+    };
     void showStatusMessage(const QString &message,
                            const QString& styleSheet  = QStringLiteral("Color:black"));
 
     QByteArray str2Hex(const QString & str);
     char convertHexChar(char ch);
     QString formatInput(const QString& hexStr);
+
+    void showReadOrWriteData(const QByteArray &data, uint8_t rdSelect = ShowReadData);
 
 private:
 

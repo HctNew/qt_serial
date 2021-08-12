@@ -13,32 +13,42 @@ class Console : public QTextEdit
 {
     Q_OBJECT
 
+
 signals:
     void getData(const QByteArray &data);
 
 private slots:
-    void setHexModeEnable(bool bSet) { m_hexModeSet = bSet; };
+    void setHexModeChecked(bool   bSet){ m_hexModeSet   = bSet;   };
+    void setTimeStampChecked(bool bSet){ m_timeStampSet = bSet;   };
+    void setShowSendChecked(bool  bSet){ m_showSend     = bSet;   };
+
 
 public:
     explicit Console(QWidget *parent = nullptr);
 
-    void readData(const QByteArray &data);
-    void setLocalEchoEnabled(bool set);
-    bool isHexMode(void) { return m_hexModeSet; };
+    void showData(const QString &data);
+    void setLocalEchoEnabled(bool bSet) { m_localEchoEnaled = bSet; };
 
-private:
-    void initContextMenu();
+public:
+    void setHexModeEnable(bool   bSet);
+    void setTimeStampEnable(bool bSet);
+    void setShowSendEnable(bool  bSet);
+    bool isHexModeChecked(void)   { return m_hexModeSet;   };
+    bool isTimeStampChecked(void) { return m_timeStampSet; };
+    bool isShowSendChecked(void)  { return m_showSend;     };
 
 protected:
     void contextMenuEvent(QContextMenuEvent *e) override; // 右键菜单
 
 private:
-    bool m_hexModeSet = false;
-    bool m_localEchoEnaled = false;
-    bool m_isHexSend = false;
-    bool m_isHexRecv = false;
-    QMenu *m_menu = nullptr;
-
+    QMenu   *m_menu             = nullptr;
+    QAction *hexMenuItem        = nullptr;
+    QAction *timeStampMenuItem  = nullptr;
+    QAction *showSendMenuItem   = nullptr;
+    bool m_hexModeSet           = false;
+    bool m_showSend             = false;
+    bool m_timeStampSet         = false;
+    bool m_localEchoEnaled      = false;
 };
 
 #endif // CONSOLE_H

@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QString>
+#include <QDateTime>
 
 
 MainWindow::MainWindow(QWidget *parent):
@@ -15,14 +16,16 @@ MainWindow::MainWindow(QWidget *parent):
       m_settings(new SettingsDialog),
       m_serial(new QSerialPort(this))
 {
+
     m_ui->setupUi(this);
 
     // 设置串口配置窗口为半模态，类似于置顶
     m_settings->setWindowModality(Qt::ApplicationModal);
 
-    // 失能终端，设置中心窗口对象为 m_console
+    // 设置串口接收区和发送区的属性
     m_ui->sendTextEdit->setEnabled(true);
-    m_ui->recvTextEdit->setReadOnly(true);
+    m_ui->sendTextEdit->setShowSendEnable(false);
+    m_ui->sendTextEdit->setTimeStampEnable(false);
 
     // 设置活动类控件状态
     m_ui->actionConnect->setEnabled(true);
@@ -84,14 +87,23 @@ void MainWindow::on_sendPushButton_clicked()
 {
     if (m_serial->isOpen())
     {
-        if (m_ui->sendTextEdit->isHexMode())
+        QByteArray byteArrayWrite;
+        if (m_ui->sendTextEdit->isHexModeChecked())
         {
-            m_serial->write(str2Hex( formatInput(m_ui->sendTextEdit->toPlainText().toUtf8()) ) );
+            byteArrayWrite = str2Hex( formatInput(m_ui->sendTextEdit->toPlainText().toUtf8()) );
         }
         else
         {
-            m_serial->write(m_ui->sendTextEdit->toPlainText().toUtf8());
+            byteArrayWrite = m_ui->sendTextEdit->toPlainText().toUtf8();
         }
+
+        m_serial->write(byteArrayWrite);
+
+        if (m_ui->recvTextEdit->isShowSendChecked())
+        {
+            showReadOrWriteData(byteArrayWrite, ShowWriteData);
+        }
+
 
     }
 }
@@ -122,9 +134,11 @@ void MainWindow::about()
 void MainWindow::readData()
 {
     QByteArray data = m_serial->readAll();
-    m_ui->recvTextEdit->readData(data);
 
-    data.clear();
+    if (!data.isEmpty())
+    {
+        showReadOrWriteData(data);
+    }
 }
 
 
@@ -209,7 +223,7 @@ QString MainWindow::formatInput(const QString& hexStr)
     int strlen = hexStr.length();
     QString tmp = hexStr;
 
-    //将输入格式化，补满四位：0XFF
+    //将输入格式化，补满两位：0XFF
     if (strlen%2 != 0)
     {
         QString startStr = hexStr.left(strlen-1);
@@ -218,5 +232,38 @@ QString MainWindow::formatInput(const QString& hexStr)
     }
 
     return tmp;
+}
+
+void MainWindow::showReadOrWriteData(const QByteArray &data, uint8_t rdSelect)
+{
+    QString strDis;
+
+    /** 使用十六进制显示 */
+    if (m_ui->recvTextEdit->isHexModeChecked())
+    {
+        QString strHex = data.toHex().toUpper();   // 转化为HEX大写字符串
+
+        // HEX之间使用空格隔开
+        for(int i=0; i<strHex.length(); i+=2)
+        {
+            QString st = strHex.mid(i,2);
+            strDis += st;
+            strDis += " ";
+        }
+    }
+    else
+    {
+        strDis = tr(data);
+    }
+
+    /** 加上时间戳显示 */
+    if (m_ui->recvTextEdit->isTimeStampChecked())
+    {
+        QDateTime  nowtime = QDateTime::currentDateTime();
+        QString str = (rdSelect == ShowReadData)? "[RECV] " : "[SEND] ";
+        strDis = "[" + nowtime.toString("hh:mm:ss:zzz") + "]" + str + strDis + "\r\n";
+    }
+
+    m_ui->recvTextEdit->showData(strDis);
 }
 

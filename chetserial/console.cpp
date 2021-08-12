@@ -13,42 +13,18 @@ Console::Console(QWidget *parent) :
     // 最大行数限制，超过的将从最前面重新开始
     document()->setMaximumBlockCount(100);
 
-    initContextMenu();
+    //默认的标准右键菜单，如果不需要刻意完全自己实现
+    m_menu = createStandardContextMenu();
+    setHexModeEnable(true);
+    setTimeStampEnable(true);
+    setShowSendEnable(true);
 }
 
 
-
-void Console::readData(const QByteArray &data)
+void Console::showData(const QString &data)
 {
-    if (data.isEmpty()) return;
-
-    QString strDis;
-
-    // 使用十六进制显示
-    if (m_hexModeSet == true)
-    {
-
-        QString strHex = data.toHex().data();   // 转化为HEX字符串
-        strHex = strHex.toUpper();              // HEX字符串大写
-
-        // HEX之间使用空格隔开
-        for(int i=0; i<strHex.length(); i+=2)
-        {
-            QString st = strHex.mid(i,2);
-            strDis += st;
-            strDis += " ";
-        }
-
-//        strDis = QString(data.toHex(' ').toUpper().append(' '));
-
-    }
-    else
-    {
-        strDis = tr(data);
-    }
-
     // 把数据插入到文本框中
-    insertPlainText(strDis);
+    insertPlainText(data);
 
 
     // 垂直滚动条保持在最下方
@@ -56,22 +32,59 @@ void Console::readData(const QByteArray &data)
     bar->setValue(bar->maximum());
 }
 
-
-void Console::setLocalEchoEnabled(bool set)
+void Console::setHexModeEnable(bool bSet)
 {
-    m_localEchoEnaled = set;
+    if (bSet)
+    {
+        hexMenuItem = m_menu->addAction(tr("HEX Mode"));
+        hexMenuItem->setChecked(false);
+        hexMenuItem->setCheckable(true);
+        connect(hexMenuItem, &QAction::triggered, this, &Console::setHexModeChecked);
+    }
+    else
+    {
+        if (hexMenuItem != nullptr)
+        {
+            delete hexMenuItem;
+        }
+    }
 }
 
-void Console::initContextMenu()
+void Console::setTimeStampEnable(bool bSet)
 {
-    //默认的标准右键菜单，如果不需要刻意完全自己实现
-    m_menu = createStandardContextMenu();
+    if (bSet)
+    {
+        timeStampMenuItem = m_menu->addAction(tr("Time Stamp"));
+        timeStampMenuItem->setChecked(false);
+        timeStampMenuItem->setCheckable(true);
+        connect(timeStampMenuItem, &QAction::triggered, this, &Console::setTimeStampChecked);
+    }
+    else
+    {
+        if (timeStampMenuItem != nullptr)
+        {
+            delete timeStampMenuItem;
+        }
+    }
+}
 
-    QAction *hexMenuItem = m_menu->addAction(tr("HEX Mode"));
-    hexMenuItem->setChecked(false);
-    hexMenuItem->setCheckable(true);
+void Console::setShowSendEnable(bool bSet)
+{
+    if (bSet)
+    {
+        showSendMenuItem = m_menu->addAction(tr("Show Send"));
+        showSendMenuItem->setChecked(false);
+        showSendMenuItem->setCheckable(true);
+        connect(showSendMenuItem, &QAction::triggered, this, &Console::setShowSendChecked);
+    }
+    else
+    {
+        if (showSendMenuItem != nullptr)
+        {
+            delete showSendMenuItem;
+        }
+    }
 
-    connect(hexMenuItem, &QAction::triggered, this, &Console::setHexModeEnable);
 }
 
 void Console::contextMenuEvent(QContextMenuEvent *e)
