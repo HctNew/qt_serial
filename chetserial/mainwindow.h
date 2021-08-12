@@ -29,6 +29,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void clearScreen();
     void openSerialPort();
     void closeSerialPort();
     void about();
@@ -48,8 +49,8 @@ private:
         ShowReadData,
         ShowWriteData
     };
-    void showStatusMessage(const QString &message,
-                           const QString& styleSheet  = QStringLiteral("Color:black"));
+    void showStatusMessage(QLabel *label, const QString &message,
+                           const QColor &acolor = Qt::black);
 
     QByteArray str2Hex(const QString & str);
     char convertHexChar(char ch);
@@ -59,10 +60,14 @@ private:
 
 private:
 
-    Ui::MainWindow *m_ui = nullptr;
-    QLabel *m_status = nullptr;
-    SettingsDialog *m_settings = nullptr;
-    QSerialPort *m_serial = nullptr;
-    QString m_str;
+    Ui::MainWindow *m_ui        = nullptr;
+    QLabel *m_serialInfoStatus  = nullptr;
+    QLabel *m_txBytesStatus     = nullptr;
+    QLabel *m_rxBytesStatus     = nullptr;
+    SettingsDialog *m_settings  = nullptr;
+    QSerialPort *m_serial       = nullptr;
+
+    long m_rxCount;
+    long m_txCount;
 };
 #endif // MAINWINDOW_H

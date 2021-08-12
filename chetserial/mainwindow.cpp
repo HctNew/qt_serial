@@ -12,7 +12,9 @@
 MainWindow::MainWindow(QWidget *parent):
       QMainWindow(parent),
       m_ui(new Ui::MainWindow),
-      m_status(new QLabel),
+      m_serialInfoStatus(new QLabel),
+      m_txBytesStatus(new QLabel),
+      m_rxBytesStatus(new QLabel),
       m_settings(new SettingsDialog),
       m_serial(new QSerialPort(this))
 {
@@ -33,9 +35,27 @@ MainWindow::MainWindow(QWidget *parent):
     m_ui->actionQuit->setEnabled(true);
     m_ui->actionConfigure->setEnabled(true);
 
-    // 暂时不知道怎么用的
-    m_ui->statusBar->addWidget(m_status);
+    // 状态栏设置
+    m_txCount = 0;
+    m_rxCount = 0;
+    m_rxBytesStatus->setMinimumSize(80, 20);
+    m_txBytesStatus->setMinimumSize(80, 20);
+    m_serialInfoStatus->setMinimumSize(240, 20);
 
+    m_ui->statusBar->addWidget(m_serialInfoStatus, 1);  // 状态栏添加Label, stretch = 1, 按比例1：1拉伸，策略得看sizePolicy属性
+    m_ui->statusBar->addWidget(m_txBytesStatus, 1);
+    m_ui->statusBar->addWidget(m_rxBytesStatus, 1);
+
+    showStatusMessage(m_serialInfoStatus, tr(" Disconnected"));
+    showStatusMessage(m_txBytesStatus, tr(" Tx: 0 Bytes"));
+    showStatusMessage(m_rxBytesStatus, tr(" Rx: 0 Bytes"));
+
+    m_rxBytesStatus->setFrameShape(QFrame::Panel);       // 设置标签形状
+    m_rxBytesStatus->setFrameShadow(QFrame::Sunken);     // 设置标签阴影
+    m_serialInfoStatus->setFrameShape(QFrame::Panel);    // 设置标签形状
+    m_serialInfoStatus->setFrameShadow(QFrame::Sunken);  // 设置标签阴影
+    m_txBytesStatus->setFrameShape(QFrame::Panel);       // 设置标签形状
+    m_txBytesStatus->setFrameShadow(QFrame::Sunken);     // 设置标签阴影
 
     //初始化菜单栏活动类控件的信号槽
     initActionsConnections();
@@ -48,6 +68,15 @@ MainWindow::~MainWindow()
 {
     delete m_ui;
     delete m_settings;
+}
+
+void MainWindow::clearScreen()
+{
+    m_txCount = 0;
+    m_rxCount = 0;
+    m_ui->recvTextEdit->clear();
+    showStatusMessage(m_txBytesStatus, tr(" Tx: 0 Bytes"));
+    showStatusMessage(m_rxBytesStatus, tr(" Rx: 0 Bytes"));
 }
 
 void MainWindow::openSerialPort()
@@ -69,17 +98,14 @@ void MainWindow::openSerialPort()
         m_ui->actionDisconnect->setEnabled(true);
         m_ui->actionConfigure->setEnabled(false);
 
-        showStatusMessage(tr("Connected to %1: %2, %3, %4, %5, %6")
+        showStatusMessage(m_serialInfoStatus, tr(" [%1] OPENED: %2, %3bits")
                           .arg(p.name).arg(p.stringbaudRate).arg(p.stringDataBits)
-                          .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl),
-                          QStringLiteral("Color:green"));
+                          , Qt::darkGreen);
     }
     else
     {
         QMessageBox::critical(this, tr("Error"), m_serial->errorString());
-
-        showStatusMessage(tr("Open error"), QStringLiteral("Color:red"));
-
+        showStatusMessage(m_serialInfoStatus, tr(" [%1] Open Error").arg(p.name), Qt::darkRed);
     }
 }
 
@@ -88,6 +114,8 @@ void MainWindow::on_sendPushButton_clicked()
     if (m_serial->isOpen())
     {
         QByteArray byteArrayWrite;
+
+        // 判断右键菜单是否选中 “Hex Mode”，十六进制发送
         if (m_ui->sendTextEdit->isHexModeChecked())
         {
             byteArrayWrite = str2Hex( formatInput(m_ui->sendTextEdit->toPlainText().toUtf8()) );
@@ -99,10 +127,16 @@ void MainWindow::on_sendPushButton_clicked()
 
         m_serial->write(byteArrayWrite);
 
+        // 判断右键菜单是否选中 “Show Send”，显示发送
         if (m_ui->recvTextEdit->isShowSendChecked())
         {
+            // 将发送的数据显示在接受区
             showReadOrWriteData(byteArrayWrite, ShowWriteData);
         }
+
+        // 更新状态栏：Tx:
+        m_txCount += byteArrayWrite.length();
+        showStatusMessage(m_txBytesStatus, tr(" Tx: %1 Bytes").arg(m_txCount));
 
 
     }
@@ -119,7 +153,7 @@ void MainWindow::closeSerialPort()
     m_ui->actionDisconnect->setEnabled(false);
     m_ui->actionConfigure->setEnabled(true);
 
-    showStatusMessage(tr("Disconnected"));
+    showStatusMessage(m_serialInfoStatus, tr(" Disconnected"));
 }
 
 void MainWindow::about()
@@ -138,6 +172,8 @@ void MainWindow::readData()
     if (!data.isEmpty())
     {
         showReadOrWriteData(data);
+        m_rxCount += data.length();
+        showStatusMessage(m_rxBytesStatus, tr(" Rx: %1 Bytes").arg(m_rxCount));
     }
 }
 
@@ -154,20 +190,23 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 
 void MainWindow::initActionsConnections()
 {
-    connect(m_ui->actionConnect,    &QAction::triggered, this,                 &MainWindow::openSerialPort);
-    connect(m_ui->actionDisconnect, &QAction::triggered, this,                 &MainWindow::closeSerialPort);
-    connect(m_ui->actionQuit,       &QAction::triggered, this,                 &MainWindow::close);
-    connect(m_ui->actionConfigure,  &QAction::triggered, m_settings,           &SettingsDialog::show);
-    connect(m_ui->actionClear,      &QAction::triggered, m_ui->recvTextEdit,   &QTextEdit::clear);
-    connect(m_ui->actionAbout,      &QAction::triggered, this,                 &MainWindow::about);
-    connect(m_ui->actionAboutQt,    &QAction::triggered, qApp,                 &QApplication::aboutQt);
+    connect(m_ui->actionConnect,    &QAction::triggered, this,          &MainWindow::openSerialPort);
+    connect(m_ui->actionDisconnect, &QAction::triggered, this,          &MainWindow::closeSerialPort);
+    connect(m_ui->actionQuit,       &QAction::triggered, this,          &MainWindow::close);
+    connect(m_ui->actionConfigure,  &QAction::triggered, m_settings,    &SettingsDialog::show);
+    connect(m_ui->actionClear,      &QAction::triggered, this,          &MainWindow::clearScreen);
+    connect(m_ui->actionAbout,      &QAction::triggered, this,          &MainWindow::about);
+    connect(m_ui->actionAboutQt,    &QAction::triggered, qApp,          &QApplication::aboutQt);
 }
 
 
-void MainWindow::showStatusMessage(const QString &message, const QString& styleSheet)
+void MainWindow::showStatusMessage(QLabel *label, const QString &message, const QColor &acolor)
 {
-    m_status->setStyleSheet(styleSheet);
-    m_status->setText(message);
+    QPalette pe;
+    pe.setColor(QPalette::WindowText, acolor);
+    label->setPalette(pe);
+
+    label->setText(message);
 }
 
 QByteArray MainWindow::str2Hex(const QString & str)
@@ -241,7 +280,8 @@ void MainWindow::showReadOrWriteData(const QByteArray &data, uint8_t rdSelect)
     /** 使用十六进制显示 */
     if (m_ui->recvTextEdit->isHexModeChecked())
     {
-        QString strHex = data.toHex().toUpper();   // 转化为HEX大写字符串
+        // 转化为HEX大写字符串
+        QString strHex = data.toHex().toUpper();
 
         // HEX之间使用空格隔开
         for(int i=0; i<strHex.length(); i+=2)
