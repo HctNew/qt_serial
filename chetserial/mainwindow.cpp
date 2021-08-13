@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent):
       m_serialInfoStatus(new QLabel),
       m_txBytesStatus(new QLabel),
       m_rxBytesStatus(new QLabel),
-      m_settings(new SettingsDialog),
+      m_settings(new SettingsDialog(this)),
       m_serial(new QSerialPort(this))
 {
 
@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent):
     m_txBytesStatus->setMinimumSize(80, 20);
     m_serialInfoStatus->setMinimumSize(240, 20);
 
+    //addWidget 指定了 label 的父对象，所以不需要手动delete
     m_ui->statusBar->addWidget(m_serialInfoStatus, 1);  // 状态栏添加Label, stretch = 1, 按比例1：1拉伸，策略得看sizePolicy属性
     m_ui->statusBar->addWidget(m_txBytesStatus, 1);
     m_ui->statusBar->addWidget(m_rxBytesStatus, 1);
@@ -67,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent):
 MainWindow::~MainWindow()
 {
     delete m_ui;
-    delete m_settings;
+    //delete m_settings;
 }
 
 void MainWindow::clearScreen()

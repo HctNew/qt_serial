@@ -2,6 +2,12 @@
 <ui version="4.0">
  <class>SettingsDialog</class>
  <widget class="QDialog" name="SettingsDialog">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,6 +18,10 @@
   </property>
   <property name="windowTitle">
    <string>Settings</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="terminal.qrc">
+    <normaloff>:/images/settings.png</normaloff>:/images/settings.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="1">
@@ -182,6 +192,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="terminal.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -4,6 +4,7 @@
 #include <QIntValidator>
 #include <QLineEdit>
 #include <QSerialPortInfo>
+
 #include "myintValidator.h"
 
 static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
@@ -28,6 +29,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
             this, &SettingsDialog::showPortInfo);
     connect(m_ui->baudRateBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &SettingsDialog::checkCustomBaudRatePolicy);
+
 
     fillPortsParameters();
     fillPortsInfo();
