@@ -23,19 +23,19 @@ SOURCES += \
     console.cpp \
     main.cpp \
     mainwindow.cpp \
-    options.cpp \
+    optionsdialog.cpp \
     settingsdialog.cpp
 
 HEADERS += \
     console.h \
     mainwindow.h \
     myintValidator.h \
-    options.h \
+    optionsdialog.h \
     settingsdialog.h
 
 FORMS += \
     mainwindow.ui \
-    options.ui \
+    optionsdialog.ui \
     settingsdialog.ui
 
 # Default rules for deployment.

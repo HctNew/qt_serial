@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QSerialPort>
+#include "optionsdialog.h"
 
 // 使用QT命令空间
 QT_BEGIN_NAMESPACE
@@ -20,6 +21,7 @@ QT_END_NAMESPACE
 class Console;
 class SettingsDialog;
 
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -34,6 +36,7 @@ private slots:
     void closeSerialPort();
     void about();
     void readData();
+    void optionsShowAndHandle();
 
     void handleError(QSerialPort::SerialPortError error);
 
@@ -42,6 +45,8 @@ private slots:
 
 private:
     void initActionsConnections();
+    void initOptions(OptionsDialog::Options options);
+
 
 private:
     enum
@@ -66,6 +71,7 @@ private:
     QLabel *m_rxBytesStatus     = nullptr;
     SettingsDialog *m_settings  = nullptr;
     QSerialPort *m_serial       = nullptr;
+    OptionsDialog *m_options    = nullptr;
 
     long m_rxCount;
     long m_txCount;

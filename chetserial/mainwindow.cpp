@@ -16,13 +16,15 @@ MainWindow::MainWindow(QWidget *parent):
       m_txBytesStatus(new QLabel),
       m_rxBytesStatus(new QLabel),
       m_settings(new SettingsDialog(this)),
-      m_serial(new QSerialPort(this))
+      m_serial(new QSerialPort(this)),
+      m_options(new OptionsDialog(this))
 {
 
     m_ui->setupUi(this);
 
-    // 设置串口配置窗口为半模态，类似于置顶
+    // 设置串口配置窗口和Options窗口为半模态，类似于置顶
     m_settings->setWindowModality(Qt::ApplicationModal);
+    m_options->setWindowModality(Qt::ApplicationModal);
 
     // 设置串口接收区和发送区的属性
     m_ui->sendTextEdit->setEnabled(true);
@@ -63,6 +65,8 @@ MainWindow::MainWindow(QWidget *parent):
 
     connect(m_serial,  &QSerialPort::errorOccurred, this, &MainWindow::handleError);
     connect(m_serial,  &QSerialPort::readyRead,     this, &MainWindow::readData);
+
+    initOptions(m_options->options());
 }
 
 MainWindow::~MainWindow()
@@ -178,6 +182,17 @@ void MainWindow::readData()
     }
 }
 
+void MainWindow::optionsShowAndHandle()
+{
+
+    if (m_options->exec())
+    {
+        initOptions(m_options->options());
+    }
+
+
+}
+
 
 void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
@@ -198,6 +213,12 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionClear,      &QAction::triggered, this,          &MainWindow::clearScreen);
     connect(m_ui->actionAbout,      &QAction::triggered, this,          &MainWindow::about);
     connect(m_ui->actionAboutQt,    &QAction::triggered, qApp,          &QApplication::aboutQt);
+    connect(m_ui->actionOptions,    &QAction::triggered, this,          &MainWindow::optionsShowAndHandle);
+}
+
+void MainWindow::initOptions(OptionsDialog::Options options)
+{
+    m_ui->recvTextEdit->setFont(options.m_font);
 }
 
 
