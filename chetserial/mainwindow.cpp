@@ -219,6 +219,12 @@ void MainWindow::initActionsConnections()
 void MainWindow::initOptions(OptionsDialog::Options options)
 {
     m_ui->recvTextEdit->setFont(options.m_font);
+
+    // 需要使用QPalette来配置，不能使用setTextColor，因为setTextColor没有使lineEdit配置前输入的内容字体颜色生效。
+    QPalette pe = m_ui->recvTextEdit->palette();
+    pe.setColor(QPalette::Text, options.m_fontColor);       // 字体颜色
+    pe.setColor(QPalette::Base, options.m_backgroundColor); // lineEdit背景色
+    m_ui->recvTextEdit->setPalette(pe);
 }
 
 

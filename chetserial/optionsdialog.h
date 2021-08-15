@@ -48,6 +48,12 @@ private slots:
 
 
 
+    void on_textColorToolButton_clicked();
+
+    void on_bgColorToolButton_clicked();
+
+    void on_defaultColorButton_clicked();
+
 private:
     Ui::OptionsDialog *m_ui;
     Options m_currentOptions;

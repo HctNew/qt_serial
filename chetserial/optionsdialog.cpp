@@ -1,6 +1,8 @@
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
+
 #include <QFontDialog>
+#include <QColorDialog>
 
 
 
@@ -13,7 +15,9 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     // 配置Tab栏 “Font”
     m_currentOptions.m_font = m_ui->fontLineEdit->font();
     m_currentOptions.m_font.setStyleName("Regular");
-    //m_currentOptions.m_fontColor =
+    m_currentOptions.m_fontColor.setRgb(0, 0, 0);
+    m_currentOptions.m_backgroundColor.setRgb(255, 255, 255);
+    m_uncertainOptions = m_currentOptions;
 
 
     initOptions();
@@ -26,6 +30,18 @@ void OptionsDialog::initOptions()
                     m_currentOptions.m_font.styleName() +
                     tr(", %1").arg(m_currentOptions.m_font.pointSize());
     m_ui->fontLineEdit->setText(str);
+
+    str = "background-color: rgb(%1, %2, %3);";
+    m_ui->textColorToolButton->setStyleSheet(str.arg(m_currentOptions.m_fontColor.red()).
+                                             arg(m_currentOptions.m_fontColor.green()).
+                                             arg(m_currentOptions.m_fontColor.blue())
+                                             );
+
+    str = "background-color: rgb(%1, %2, %3);";
+    m_ui->bgColorToolButton->setStyleSheet(str.arg(m_currentOptions.m_backgroundColor.red()).
+                                             arg(m_currentOptions.m_backgroundColor.green()).
+                                             arg(m_currentOptions.m_backgroundColor.blue())
+                                             );
 }
 
 OptionsDialog::~OptionsDialog()
@@ -41,11 +57,11 @@ OptionsDialog::Options OptionsDialog::options() const
 void OptionsDialog::on_fontConfigButton_clicked()
 {
     bool ok = true;
-    QFont font = QFontDialog::getFont(&ok);
+    QFont font = QFontDialog::getFont(&ok, m_currentOptions.m_font, nullptr, "Font");
     if (ok)
     {
-        m_ui->fontLineEdit->setFont(font);
-        QString str = font.family() + ", " + font.styleName() + tr(", %1").arg(font.pointSize());
+        //m_ui->fontLineEdit->setFont(font);
+        QString str = font.family() + ", " + font.styleName() + tr(", %1pt").arg(font.pointSize());
         m_ui->fontLineEdit->setText(str);
         m_uncertainOptions.m_font = font;
     }
@@ -65,12 +81,12 @@ void OptionsDialog::on_cancelButton_clicked()
     if (m_isChanged)
     {
         m_isChanged = false;
-        m_ui->fontLineEdit->setFont(m_currentOptions.m_font);
         initOptions();
         accept();
     }
     else
     {
+        initOptions();
         reject();
     }
 
@@ -80,4 +96,56 @@ void OptionsDialog::on_applyButton_clicked()
 {
     m_currentOptions = m_uncertainOptions;
     m_isChanged = true;
+}
+
+void OptionsDialog::on_textColorToolButton_clicked()
+{
+    QColor color = QColorDialog::getColor(m_currentOptions.m_fontColor, nullptr,
+                                          "Text Color", QColorDialog::ShowAlphaChannel);
+    if (color != QColor::Invalid)
+    {
+        QString str = "background-color: rgb(%1, %2, %3);";
+        m_ui->textColorToolButton->setStyleSheet(str.arg(color.red()).
+                                                 arg(color.green()).
+                                                 arg(color.blue())
+                                                 );
+
+        m_uncertainOptions.m_fontColor = color;
+    }
+
+
+}
+
+void OptionsDialog::on_bgColorToolButton_clicked()
+{
+    QColor color = QColorDialog::getColor(m_currentOptions.m_backgroundColor, nullptr,
+                                          "Background Color", QColorDialog::ShowAlphaChannel);
+    if (color != QColor::Invalid)
+    {
+        QString str = "background-color: rgb(%1, %2, %3);";
+        m_ui->bgColorToolButton->setStyleSheet(str.arg(color.red()).
+                                                 arg(color.green()).
+                                                 arg(color.blue())
+                                                 );
+
+        m_uncertainOptions.m_backgroundColor = color;
+    }
+}
+
+void OptionsDialog::on_defaultColorButton_clicked()
+{
+    m_uncertainOptions.m_fontColor.setRgb(0, 0, 0);
+    m_uncertainOptions.m_backgroundColor.setRgb(255, 255, 255);
+
+    QString str = "background-color: rgb(%1, %2, %3);";
+    m_ui->textColorToolButton->setStyleSheet(str.arg(m_uncertainOptions.m_fontColor.red()).
+                                             arg(m_uncertainOptions.m_fontColor.green()).
+                                             arg(m_uncertainOptions.m_fontColor.blue())
+                                             );
+
+    str = "background-color: rgb(%1, %2, %3);";
+    m_ui->bgColorToolButton->setStyleSheet(str.arg(m_uncertainOptions.m_backgroundColor.red()).
+                                             arg(m_uncertainOptions.m_backgroundColor.green()).
+                                             arg(m_uncertainOptions.m_backgroundColor.blue())
+                                             );
 }
