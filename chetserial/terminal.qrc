@@ -6,5 +6,7 @@
         <file>images/settings.png</file>
         <file>images/clear.png</file>
         <file>images/context_check.ico</file>
+        <file>language/en_CN.qm</file>
+        <file>language/zh_CN.qm</file>
     </qresource>
 </RCC>

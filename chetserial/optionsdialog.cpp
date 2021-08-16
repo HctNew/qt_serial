@@ -28,7 +28,7 @@ void OptionsDialog::initOptions()
     m_ui->fontLineEdit->setFont(m_currentOptions.m_font);
     QString str =   m_currentOptions.m_font.family() + ", " +
                     m_currentOptions.m_font.styleName() +
-                    tr(", %1").arg(m_currentOptions.m_font.pointSize());
+                    ", " + QString::number(m_currentOptions.m_font.pointSize()) + "pt";
     m_ui->fontLineEdit->setText(str);
 
     str = "background-color: rgb(%1, %2, %3);";
@@ -57,11 +57,11 @@ OptionsDialog::Options OptionsDialog::options() const
 void OptionsDialog::on_fontConfigButton_clicked()
 {
     bool ok = true;
-    QFont font = QFontDialog::getFont(&ok, m_currentOptions.m_font, nullptr, "Font");
+    QFont font = QFontDialog::getFont(&ok, m_currentOptions.m_font, nullptr, tr("Font"));
     if (ok)
     {
         //m_ui->fontLineEdit->setFont(font);
-        QString str = font.family() + ", " + font.styleName() + tr(", %1pt").arg(font.pointSize());
+        QString str = font.family() + ", " + font.styleName() + ", " + QString::number(font.pointSize()) + "pt";
         m_ui->fontLineEdit->setText(str);
         m_uncertainOptions.m_font = font;
     }
@@ -101,7 +101,7 @@ void OptionsDialog::on_applyButton_clicked()
 void OptionsDialog::on_textColorToolButton_clicked()
 {
     QColor color = QColorDialog::getColor(m_currentOptions.m_fontColor, nullptr,
-                                          "Text Color", QColorDialog::ShowAlphaChannel);
+                                          tr("Text Color"), QColorDialog::ShowAlphaChannel);
     if (color != QColor::Invalid)
     {
         QString str = "background-color: rgb(%1, %2, %3);";
@@ -119,7 +119,7 @@ void OptionsDialog::on_textColorToolButton_clicked()
 void OptionsDialog::on_bgColorToolButton_clicked()
 {
     QColor color = QColorDialog::getColor(m_currentOptions.m_backgroundColor, nullptr,
-                                          "Background Color", QColorDialog::ShowAlphaChannel);
+                                          tr("Background Color"), QColorDialog::ShowAlphaChannel);
     if (color != QColor::Invalid)
     {
         QString str = "background-color: rgb(%1, %2, %3);";

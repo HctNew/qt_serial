@@ -57,6 +57,7 @@ void SettingsDialog::showPortInfo(int idx)
 
     // Description: %1, [%1 = arg(……)], 类似于printf
     m_ui->descriptionLabel->setText(    tr("Description: %1").arg(          list.count() > 1 ? list.at(1) : tr(blankString) ) );
+    m_ui->manufacturerLabel->setText(   tr("Manufacture: %1").arg(          list.count() > 2 ? list.at(2) : tr(blankString) ) );
     m_ui->serialNumberLabel->setText(   tr("Serial number: %1").arg(        list.count() > 3 ? list.at(3) : tr(blankString) ) );
     m_ui->locationLabel->setText(       tr("Location: %1").arg(             list.count() > 4 ? list.at(4) : tr(blankString) ) );
     m_ui->vidLabel->setText(            tr("Vendor Identifier: %1").arg(    list.count() > 5 ? list.at(5) : tr(blankString) ) );

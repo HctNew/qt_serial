@@ -328,7 +328,7 @@ void MainWindow::showReadOrWriteData(const QByteArray &data, uint8_t rdSelect)
     if (m_ui->recvTextEdit->isTimeStampChecked())
     {
         QDateTime  nowtime = QDateTime::currentDateTime();
-        QString str = (rdSelect == ShowReadData)? "[RECV] " : "[SEND] ";
+        QString str = (rdSelect == ShowReadData)? tr("[RECV] ") : tr("[SEND] ");
         strDis = "[" + nowtime.toString("hh:mm:ss:zzz") + "]" + str + strDis + "\r\n";
     }
 
