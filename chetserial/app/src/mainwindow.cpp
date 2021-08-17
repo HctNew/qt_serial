@@ -182,7 +182,7 @@ bool MainWindow::initXml()
     // 判断文件是否存在
     if (!file.exists())
     {
-        createXml(XML_FILEDIR, XML_FILENAME);
+        xmlHelper::createXml(XML_FILEDIR, XML_FILENAME);
     }
 
     // 加载界面语言配置
@@ -206,7 +206,7 @@ bool MainWindow::xmlSaveLanguage(QString str)
 {
     QDomDocument doc;
 
-    if (false == xmlRead(XML_FILE, doc)) return false;
+    if (false == xmlHelper::xmlRead(XML_FILE, doc)) return false;
 
     QDomElement root = doc.documentElement();      // 返回根节点
     QDomNodeList tmp = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
@@ -227,14 +227,16 @@ bool MainWindow::xmlSaveLanguage(QString str)
         root.appendChild(node);
     }
 
-    return xmlWrite(XML_FILE, doc);
+
+    return xmlHelper::xmlWrite(XML_FILE, doc);
 }
 
 bool MainWindow::xmlLoadLanguage()
 {
     QDomDocument doc;
 
-    if (false == xmlRead(XML_FILE, doc)) return false;
+
+    if (false == xmlHelper::xmlRead(XML_FILE, doc)) return false;
 
     QDomElement  root  = doc.documentElement();      // 返回根节点
     QDomNodeList tmp   = root.elementsByTagName(QString(XML_NODE_LANGUAGE));

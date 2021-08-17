@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QSerialPort>
+#include <QDebug>
 #include "optionsdialog.h"
 
 

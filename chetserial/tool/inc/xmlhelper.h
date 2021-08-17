@@ -10,6 +10,8 @@ class QDomDocument;
 
 QT_END_NAMESPACE
 
+namespace xmlHelper {
+
 /**
  * @brief create XML file
  * @param filePath  file Dir
@@ -33,5 +35,7 @@ bool xmlRead(const QString &filePath, QDomDocument &doc);
  * @return
  */
 bool xmlWrite(const QString &filePath, const QDomDocument &doc);
+
+}
 
 #endif // XMLHELPER_H

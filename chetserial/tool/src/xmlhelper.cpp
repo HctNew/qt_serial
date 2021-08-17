@@ -8,14 +8,13 @@
 #include <QMessageBox>
 
 
-
 /**
  * @brief create XML file
  * @param filePath  file Dir
  * @param fileName  file name
  * @return bool
  */
-bool createXml(QString filePath, QString fileName)
+bool xmlHelper::createXml(QString filePath, QString fileName)
 {
     QDir tempDir;
     QFile tempFile;
@@ -65,7 +64,7 @@ bool createXml(QString filePath, QString fileName)
  * @param [out]doc          xml data
  * @return
  */
-bool xmlRead(const QString &filePath, QDomDocument &doc)
+bool xmlHelper::xmlRead(const QString &filePath, QDomDocument &doc)
 {
     QFile file(filePath);
     QDir  dir;
@@ -95,7 +94,7 @@ bool xmlRead(const QString &filePath, QDomDocument &doc)
  * @param [in]doc       xml data
  * @return
  */
-bool xmlWrite(const QString &filePath, const QDomDocument &doc)
+bool xmlHelper::xmlWrite(const QString &filePath, const QDomDocument &doc)
 {
     QFile file(filePath);
     QDir  dir;

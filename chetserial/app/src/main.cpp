@@ -35,37 +35,40 @@ static bool LoadLanguage(void)
     QDomDocument doc;
     QTranslator *m_translator = new QTranslator;
 
-    if (false == xmlRead(XML_FILE, doc)) return false;
 
-    QDomElement  root  = doc.documentElement();      // 返回根节点
-    QDomNodeList tmp   = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
-    QDomNode     node  = tmp.at(0).firstChild();
-
-
-    // 如果xml里有 XML_NODE_LANGUAGE 配置并且配置为中文，则加载中文翻译包
-    if ( (tmp.length() == 1) && (!node.isNull()) && (node.nodeValue() == QString("Chinese") ))
+    do
     {
-        QString strLanguageFile(":/language/zh_CN.qm");
-        if (QFile(strLanguageFile).exists())
+        if (false == xmlHelper::xmlRead(XML_FILE, doc)) break;
+
+        QDomElement  root  = doc.documentElement();      // 返回根节点
+        QDomNodeList tmp   = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
+        QDomNode     node  = tmp.at(0).firstChild();
+
+
+        // 如果xml里有 XML_NODE_LANGUAGE 配置并且配置为中文，则加载中文翻译包
+        if ( (tmp.length() == 1) && (!node.isNull()) && (node.nodeValue() == QString("Chinese") ))
         {
-            m_translator->load(strLanguageFile);
-            qApp->installTranslator(m_translator);
-            m_translator->deleteLater(); // 使用deleteLater自动管理析构
-            return true;
-        }
-    }
-    else
-    {
-        QString strLanguageFile(":/language/en_CN.qm");
-        // 否则加载英文翻译包
-        if (QFile(strLanguageFile).exists())
-        {
-            m_translator->load(strLanguageFile);
-            qApp->installTranslator(m_translator);
-            m_translator->deleteLater();
-            return true;
+            QString strLanguageFile(":/language/zh_CN.qm");
+            if (QFile(strLanguageFile).exists())
+            {
+                m_translator->load(strLanguageFile);
+                qApp->installTranslator(m_translator);
+                m_translator->deleteLater(); // 使用deleteLater自动管理析构
+                return true;
+            }
         }
 
+    }while(0);
+
+
+    QString strLanguageFile(":/language/en_CN.qm");
+    // 否则加载英文翻译包
+    if (QFile(strLanguageFile).exists())
+    {
+        m_translator->load(strLanguageFile);
+        qApp->installTranslator(m_translator);
+        m_translator->deleteLater();
+        return true;
     }
 
     return false;
