@@ -29,11 +29,14 @@ MainWindow::MainWindow(QWidget *parent):
 
     m_ui->setupUi(this);
 
-    initXml();
+    xmlInitLanguage(XML_FILE);
+    xmlLoadLanguage(XML_FILE);
+    m_settings->xmlInitSerialSettings(XML_FILE);
+    m_settings->xmlLoadSerialSettings(XML_FILE);
 
 
     // 设置串口配置窗口和Options窗口为半模态，类似于置顶
-    m_settings->setWindowModality(Qt::ApplicationModal);
+    //m_settings->setWindowModality(Qt::ApplicationModal);
     m_options->setWindowModality(Qt::ApplicationModal);
 
     // 设置串口接收区和发送区的属性
@@ -56,28 +59,27 @@ MainWindow::MainWindow(QWidget *parent):
 
     //addWidget 指定了 label 的父对象，所以不需要手动delete
     m_ui->statusBar->addWidget(m_serialInfoStatus, 1);  // 状态栏添加Label, stretch = 1, 按比例1：1拉伸，策略得看sizePolicy属性
-    m_ui->statusBar->addWidget(m_txBytesStatus, 1);
-    m_ui->statusBar->addWidget(m_rxBytesStatus, 1);
+    m_ui->statusBar->addWidget(m_txBytesStatus,    1);
+    m_ui->statusBar->addWidget(m_rxBytesStatus,    1);
 
     showStatusMessage(m_serialInfoStatus, tr(" Disconnected"));
-    showStatusMessage(m_txBytesStatus, tr(" Tx: 0 Bytes"));
-    showStatusMessage(m_rxBytesStatus, tr(" Rx: 0 Bytes"));
+    showStatusMessage(m_txBytesStatus,    tr(" Tx: 0 Bytes"));
+    showStatusMessage(m_rxBytesStatus,    tr(" Rx: 0 Bytes"));
 
     m_rxBytesStatus->setFrameShape(QFrame::Panel);       // 设置标签形状
     m_rxBytesStatus->setFrameShadow(QFrame::Sunken);     // 设置标签阴影
-    m_serialInfoStatus->setFrameShape(QFrame::Panel);    // 设置标签形状
-    m_serialInfoStatus->setFrameShadow(QFrame::Sunken);  // 设置标签阴影
     m_txBytesStatus->setFrameShape(QFrame::Panel);       // 设置标签形状
     m_txBytesStatus->setFrameShadow(QFrame::Sunken);     // 设置标签阴影
+    m_serialInfoStatus->setFrameShape(QFrame::Panel);    // 设置标签形状
+    m_serialInfoStatus->setFrameShadow(QFrame::Sunken);  // 设置标签阴影
 
-    //初始化菜单栏活动类控件的信号槽
-    initActionsConnections();
-
-    connect(m_serial,  &QSerialPort::errorOccurred, this, &MainWindow::handleError);
-    connect(m_serial,  &QSerialPort::readyRead,     this, &MainWindow::readData);
+    //初始化菜单栏活动类控件以及串口的信号槽
+    connect(m_ui->actionQuit,       &QAction::triggered,            this,       &MainWindow::close);
+    connect(m_ui->actionAboutQt,    &QAction::triggered,            qApp,       &QApplication::aboutQt);
+    connect(m_serial,               &QSerialPort::errorOccurred,    this,       &MainWindow::handleError);
+    connect(m_serial,               &QSerialPort::readyRead,        this,       &MainWindow::readData);
 
     initOptions(m_options->options());
-
 }
 
 MainWindow::~MainWindow()
@@ -118,7 +120,9 @@ void MainWindow::on_sendPushButton_clicked()
 }
 
 
-
+/**
+ * @brief read serial data and show in the recvEdit
+ */
 void MainWindow::readData()
 {
     QByteArray data = m_serial->readAll();
@@ -143,13 +147,10 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 }
 
 
-void MainWindow::initActionsConnections()
-{
-    connect(m_ui->actionQuit,       &QAction::triggered, this,          &MainWindow::close);
-    connect(m_ui->actionConfigure,  &QAction::triggered, m_settings,    &SettingsDialog::show);
-    connect(m_ui->actionAboutQt,    &QAction::triggered, qApp,          &QApplication::aboutQt);
-}
-
+/**
+ * @brief initialize options dialog settings
+ * @param options
+ */
 void MainWindow::initOptions(OptionsDialog::Options options)
 {
     m_ui->recvTextEdit->setFont(options.m_font);
@@ -161,7 +162,6 @@ void MainWindow::initOptions(OptionsDialog::Options options)
     m_ui->recvTextEdit->setPalette(pe);
 }
 
-
 void MainWindow::showStatusMessage(QLabel *label, const QString &message, const QColor &acolor)
 {
     QPalette pe;
@@ -172,71 +172,67 @@ void MainWindow::showStatusMessage(QLabel *label, const QString &message, const 
 }
 
 /**
- * @brief initial Xml file
- * @return bool
+ * @brief Initialize language setting in the xml
+ * @param xmlFile
+ * @return
  */
-bool MainWindow::initXml()
-{
-    QFile file(XML_FILE);
-
-    // 判断文件是否存在
-    if (!file.exists())
-    {
-        xmlHelper::createXml(XML_FILEDIR, XML_FILENAME);
-    }
-
-    // 加载界面语言配置
-    do
-    {
-        if (false == xmlLoadLanguage()) break;
-
-        return true;
-    }while(0);
-
-    return false;
-}
-
-
-/**
- * @brief save Language setting
- * @param str
- * @return bool
- */
-bool MainWindow::xmlSaveLanguage(QString str)
+bool MainWindow::xmlInitLanguage(const QString xmlFile)
 {
     QDomDocument doc;
 
-    if (false == xmlHelper::xmlRead(XML_FILE, doc)) return false;
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
 
     QDomElement root = doc.documentElement();      // 返回根节点
     QDomNodeList tmp = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
 
-    if (tmp.length() == 1)
+    if(tmp.length() == 0)
     {
-        QDomNode node    = tmp.at(0);
-        QDomNode oldNode = node.firstChild();
-        QDomNode newNode = node.firstChild();
-        newNode.setNodeValue(str);
-        node.replaceChild(newNode, oldNode);
-    }
-    else if(tmp.length() == 0)
-    {
-        QDomNode node = doc.createElement(QString(XML_NODE_LANGUAGE));
-        QDomText text = doc.createTextNode(str);
+        QDomElement  node = doc.createElement(QString(XML_NODE_LANGUAGE));
+        QDomText     text = doc.createTextNode(XML_LANGUAGE_DEFAULT);
         node.appendChild(text);
         root.appendChild(node);
+
+        m_ui->actionChinese->setChecked(false);
+        m_ui->actionEnglish->setChecked(true);
+
+        return xmlHelper::xmlWrite(xmlFile, doc);
     }
 
-
-    return xmlHelper::xmlWrite(XML_FILE, doc);
+    return true;
 }
 
-bool MainWindow::xmlLoadLanguage()
+
+
+/**
+ * @brief save Language setting
+ * @param xmlFile   xml file "path/name"
+ * @param str       language name
+ * @return
+ */
+bool MainWindow::xmlSaveLanguage(const QString xmlFile, QString str)
 {
     QDomDocument doc;
 
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
 
-    if (false == xmlHelper::xmlRead(XML_FILE, doc)) return false;
+    QDomElement root = doc.documentElement();      // 返回根节点
+    QDomNodeList tmp = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
+
+    tmp.at(0).firstChild().setNodeValue(str);
+
+    return xmlHelper::xmlWrite(xmlFile, doc);
+}
+
+/**
+ * @brief xml load language
+ * @param xmlFile   xml file "path/name"
+ * @return
+ */
+bool MainWindow::xmlLoadLanguage(const QString xmlFile)
+{
+    QDomDocument doc;
+
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
 
     QDomElement  root  = doc.documentElement();      // 返回根节点
     QDomNodeList tmp   = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
@@ -244,7 +240,7 @@ bool MainWindow::xmlLoadLanguage()
 
 
     // 如果xml里有 XML_NODE_LANGUAGE 配置并且配置为中文
-    if ( (tmp.length() == 1) && (!node.isNull()) && (node.nodeValue() == QString("Chinese")) )
+    if ( node.nodeValue() == QString("Chinese") )
     {
         m_ui->actionChinese->setChecked(true);
         m_ui->actionEnglish->setChecked(false);
@@ -381,7 +377,7 @@ void MainWindow::on_actionChinese_triggered()
 
     m_ui->actionEnglish->setChecked(false);
 
-    if (true == xmlSaveLanguage(QString("Chinese")))
+    if (true == xmlSaveLanguage(XML_FILE, QString("Chinese")))
     {
         QMessageBox::information(this, tr("Language Setting"),
                                  tr("The changed will take effect when the program is restarted."));
@@ -403,7 +399,7 @@ void MainWindow::on_actionEnglish_triggered()
 
     m_ui->actionChinese->setChecked(false);
 
-    if (true == xmlSaveLanguage(QString("English")))
+    if (true == xmlSaveLanguage(XML_FILE, QString("English")))
     {
         QMessageBox::information(this, tr("Language Setting"),
                                  tr("The changed will take effect when the program is restarted."));
@@ -426,10 +422,10 @@ void MainWindow::on_actionClear_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::about(this, tr("About Simple Terminal"),
-                       tr("The <b>Simple Terminal</b> example demonstrates how to"
-                          "use the Qt Serial Port Module in modern GUI applications"
-                          "using Qt, with a menu bar, toolbars, and a status bar."));
+    QMessageBox::about(this, tr("About"),
+                       tr("<b>Author:</b> Chet <br>"
+                          "<b>Mail:  </b> hctlovelife@foxmail.com<br><br>"
+                          "Welcome to use my serial assistance!"));
 }
 
 void MainWindow::on_actionConnect_triggered()
@@ -474,4 +470,12 @@ void MainWindow::on_actionDisconnect_triggered()
     m_ui->actionConfigure->setEnabled(true);
 
     showStatusMessage(m_serialInfoStatus, tr(" Disconnected"));
+}
+
+void MainWindow::on_actionConfigure_triggered()
+{
+    if ( m_settings->exec() == QDialog::Accepted)
+    {
+        m_settings->xmlSaveSerialSettings(XML_FILE);
+    }
 }

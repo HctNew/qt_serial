@@ -1,11 +1,18 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
+#include "myintValidator.h"
+#include "xmlhelper.h"
 
 #include <QIntValidator>
 #include <QLineEdit>
 #include <QSerialPortInfo>
+#include <QFile>
+#include <QDomDocument>
+#include <QTextStream>
+#include <QDir>
 
-#include "myintValidator.h"
+#include <QDebug>
+
 
 static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
 
@@ -24,7 +31,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     // 选择插入Box策略：输入字符串不插入到Box下拉列表中
     m_ui->baudRateBox->setInsertPolicy(QComboBox::NoInsert);
 
-    connect(m_ui->applyButton, &QPushButton::clicked, this, &SettingsDialog::apply);
     connect(m_ui->serialPortInfoListBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &SettingsDialog::showPortInfo);
     connect(m_ui->baudRateBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -48,6 +54,147 @@ SettingsDialog::Settings SettingsDialog::settings() const
     return m_currentSettings;
 }
 
+/**
+ * @brief Initialize serial settings in the xml file
+ * @param xmlFile   xmlfile "filedir/filename"
+ * @return
+ */
+bool SettingsDialog::xmlInitSerialSettings(const QString xmlFile)
+{
+    QDomDocument doc;
+
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
+
+    QDomElement root = doc.documentElement();      // 返回根节点
+    QDomNodeList nodeList = root.elementsByTagName(QString(XML_NODE_SERIAL));
+    QDomElement parentElem = nodeList.at(0).toElement();
+
+    // 如果没有 XML_NODE_SERIAL 这个节点，则创建一个
+    if (parentElem.isNull())
+    {
+        parentElem = doc.createElement(QString(XML_NODE_SERIAL));
+        root.appendChild(parentElem);
+    }
+
+    // 判断是否有子节点，没有的话则创建
+    if (!parentElem.hasChildNodes())
+    {
+
+        QDomElement childElem  = doc.createElement(QStringLiteral("BaudRate"));
+        QDomText    text       = doc.createTextNode(m_currentSettings.stringbaudRate);
+        childElem.setAttribute("index", m_validInterfaceCfg.baudRateIndex);
+        childElem.appendChild(text);
+        parentElem.appendChild(childElem);
+
+        childElem  = doc.createElement(QStringLiteral("DataBits"));
+        text       = doc.createTextNode(m_currentSettings.stringDataBits);
+        childElem.setAttribute("index", m_validInterfaceCfg.dataBitsIndex);
+        qDebug() << m_ui->dataBitsBox->currentIndex();
+        childElem.appendChild(text);
+        parentElem.appendChild(childElem);
+
+        childElem  = doc.createElement(QStringLiteral("Parity"));
+        text       = doc.createTextNode(m_currentSettings.stringParity);
+        childElem.setAttribute("index", m_validInterfaceCfg.parityIndex);
+        childElem.appendChild(text);
+        parentElem.appendChild(childElem);
+
+        childElem  = doc.createElement(QStringLiteral("StopBits"));
+        text       = doc.createTextNode(m_currentSettings.stringStopBits);
+        childElem.setAttribute("index", m_validInterfaceCfg.stopBitsIndex);
+        childElem.appendChild(text);
+        parentElem.appendChild(childElem);
+
+        childElem  = doc.createElement(QStringLiteral("FlowControl"));
+        text       = doc.createTextNode(m_currentSettings.stringFlowControl);
+        childElem.setAttribute("index", m_validInterfaceCfg.flowControlIndex);
+        childElem.appendChild(text);
+        parentElem.appendChild(childElem);
+
+        return xmlHelper::xmlWrite(xmlFile, doc);
+    }
+
+    return true;
+}
+
+bool SettingsDialog::xmlSaveSerialSettings(const QString xmlFile)
+{
+    QDomDocument doc;
+
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
+
+    QDomElement root = doc.documentElement();      // 返回根节点
+    QDomNodeList nodeList = root.elementsByTagName(QString(XML_NODE_SERIAL));
+    QDomElement parentElem = nodeList.at(0).toElement();
+
+    nodeList = parentElem.childNodes();
+
+    nodeList.at(0).firstChild().setNodeValue(m_currentSettings.stringbaudRate);
+    nodeList.at(0).toElement().setAttribute("index", m_ui->baudRateBox->currentIndex());
+
+    nodeList.at(1).firstChild().setNodeValue(m_currentSettings.stringDataBits);
+    nodeList.at(1).toElement().setAttribute("index", m_ui->dataBitsBox->currentIndex());
+
+    nodeList.at(2).firstChild().setNodeValue(m_currentSettings.stringParity);
+    nodeList.at(2).toElement().setAttribute("index", m_ui->parityBox->currentIndex());
+
+    nodeList.at(3).firstChild().setNodeValue(m_currentSettings.stringStopBits);
+    nodeList.at(3).toElement().setAttribute("index", m_ui->stopBitsBox->currentIndex());
+
+    nodeList.at(4).firstChild().setNodeValue(m_currentSettings.stringFlowControl);
+    nodeList.at(4).toElement().setAttribute("index", m_ui->flowControlBox->currentIndex());
+
+    return xmlHelper::xmlWrite(xmlFile, doc);
+
+}
+
+bool SettingsDialog::xmlLoadSerialSettings(const QString xmlFile)
+{
+    QDomDocument doc;
+
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
+
+
+    QDomElement  root       = doc.documentElement();      // 返回根节点
+    QDomNodeList nodeList   = root.elementsByTagName(QString(XML_NODE_SERIAL));
+    QDomElement  parentElem = nodeList.at(0).toElement();
+
+    nodeList = parentElem.childNodes();
+
+
+    m_ui->baudRateBox->setCurrentIndex(     nodeList.at(0).toElement().attribute("index").toInt());
+    m_ui->baudRateBox->setCurrentText(      nodeList.at(0).firstChild().nodeValue() );
+    m_ui->dataBitsBox->setCurrentIndex(     nodeList.at(1).toElement().attribute("index").toInt());
+    m_ui->parityBox->setCurrentIndex(       nodeList.at(2).toElement().attribute("index").toInt());
+    m_ui->stopBitsBox->setCurrentIndex(     nodeList.at(3).toElement().attribute("index").toInt());
+    m_ui->flowControlBox->setCurrentIndex(  nodeList.at(4).toElement().attribute("index").toInt());
+
+    updateSettings();
+
+    return true;
+}
+
+/**
+ * @brief 重写对话框的关闭窗口事件
+ * @param event
+ */
+void SettingsDialog::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event);
+
+    // 还原界面显示
+    m_ui->baudRateBox->setCurrentIndex(             m_validInterfaceCfg.baudRateIndex   );
+    m_ui->baudRateBox->setCurrentText(              m_validInterfaceCfg.baudRateText    );
+    m_ui->dataBitsBox->setCurrentIndex(             m_validInterfaceCfg.dataBitsIndex   );
+    m_ui->parityBox->setCurrentIndex(               m_validInterfaceCfg.parityIndex     );
+    m_ui->stopBitsBox->setCurrentIndex(             m_validInterfaceCfg.stopBitsIndex   );
+    m_ui->flowControlBox->setCurrentIndex(          m_validInterfaceCfg.flowControlIndex);
+    m_ui->serialPortInfoListBox->setCurrentIndex(   m_validInterfaceCfg.serialProtIndex );
+
+    reject();
+}
+
+
 /** 显示串口信息 */
 void SettingsDialog::showPortInfo(int idx)
 {
@@ -64,13 +211,7 @@ void SettingsDialog::showPortInfo(int idx)
     m_ui->pidLabel->setText(            tr("Product Identifier: %1").arg(   list.count() > 6 ? list.at(6) : tr(blankString) ) );
 }
 
-void SettingsDialog::apply()
-{
-    updateSettings();
 
-    // 只是将Dialog隐藏起来，并没有像close()函数那样析构对象
-    hide();
-}
 
 void SettingsDialog::checkCustomBaudRatePolicy(int idx)
 {
@@ -181,6 +322,7 @@ void SettingsDialog::updateSettings()
                         m_ui->dataBitsBox->itemData(m_ui->dataBitsBox->currentIndex()).toInt());
     m_currentSettings.stringDataBits = m_ui->dataBitsBox->currentText();
 
+
     /********************************** 4、校验位 ********************************************/
     m_currentSettings.parity = static_cast<QSerialPort::Parity>(
                         m_ui->parityBox->itemData(m_ui->parityBox->currentIndex()).toInt());
@@ -198,4 +340,21 @@ void SettingsDialog::updateSettings()
 
     /********************************** 7、本地回显 ********************************************/
     //m_currentSettings.localEchoEnabled = m_ui->localEchoCheckBox->isChecked();
+
+    m_validInterfaceCfg.baudRateIndex    = m_ui->baudRateBox->currentIndex();
+    m_validInterfaceCfg.baudRateText     = m_ui->baudRateBox->currentText();
+    m_validInterfaceCfg.dataBitsIndex    = m_ui->dataBitsBox->currentIndex();
+    m_validInterfaceCfg.parityIndex      = m_ui->parityBox->currentIndex();
+    m_validInterfaceCfg.stopBitsIndex    = m_ui->stopBitsBox->currentIndex();
+    m_validInterfaceCfg.flowControlIndex = m_ui->flowControlBox->currentIndex();
+    m_validInterfaceCfg.serialProtIndex = m_ui->serialPortInfoListBox->currentIndex();
+}
+
+
+void SettingsDialog::on_applyButton_clicked()
+{
+    updateSettings();
+
+    // 返回accept信号给exec()
+    accept();
 }

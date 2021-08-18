@@ -7,6 +7,19 @@
 #include <QTextStream>
 #include <QMessageBox>
 
+/**
+ * @brief xmlHelper::initXml
+ */
+void xmlHelper::initXml(void)
+{
+    QFile file(XML_FILE);
+
+    // 判断文件是否存在
+    if (!file.exists())
+    {
+        xmlHelper::createXml(XML_FILEDIR, XML_FILENAME);
+    }
+}
 
 /**
  * @brief create XML file

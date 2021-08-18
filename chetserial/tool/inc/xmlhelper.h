@@ -10,7 +10,17 @@ class QDomDocument;
 
 QT_END_NAMESPACE
 
+#define XML_FILE        ("userconfig/config.xml")
+#define XML_FILEDIR     ("userconfig")
+#define XML_FILENAME    ("config.xml")
+
 namespace xmlHelper {
+
+
+/**
+ * @brief xmlHelper::initXml
+ */
+void initXml(void);
 
 /**
  * @brief create XML file

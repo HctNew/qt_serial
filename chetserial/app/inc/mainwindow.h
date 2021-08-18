@@ -6,6 +6,8 @@
 #include <QDebug>
 #include "optionsdialog.h"
 
+#define XML_NODE_LANGUAGE       ("language")
+#define XML_LANGUAGE_DEFAULT    ("English")
 
 // 使用QT命令空间
 QT_BEGIN_NAMESPACE
@@ -24,12 +26,6 @@ QT_END_NAMESPACE
 class Console;
 class SettingsDialog;
 
-
-#define XML_FILE        ("userconfig/config.xml")
-#define XML_FILEDIR     ("userconfig")
-#define XML_FILENAME    ("config.xml")
-
-#define XML_NODE_LANGUAGE  ("language")
 
 class MainWindow : public QMainWindow
 {
@@ -60,10 +56,8 @@ private slots:
 
     void on_actionDisconnect_triggered();
 
-private:
-    void initActionsConnections();
-    void initOptions(OptionsDialog::Options options);
 
+    void on_actionConfigure_triggered();
 
 private:
     enum
@@ -79,12 +73,11 @@ private:
 
     void showStatusMessage(QLabel *label, const QString &message,
                            const QColor &acolor = Qt::black);
+    void initOptions(OptionsDialog::Options options);
 
-    bool initXml(void);
-    bool xmlSaveLanguage(QString str);
-    bool xmlLoadLanguage();
-    bool xmlSaveSerialPortSettings();
-    bool xmlReadSerialPortSettings();
+    bool xmlInitLanguage(const QString xmlFile);
+    bool xmlSaveLanguage(const QString xmlFile, QString str);
+    bool xmlLoadLanguage(const QString xmlFile);
 
 private:
 

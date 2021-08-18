@@ -1,4 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root>
     <language>Chinese</language>
+    <serialParam>
+        <BaudRate index="3">115200</BaudRate>
+        <DataBits index="3">8</DataBits>
+        <Parity index="0">无</Parity>
+        <StopBits index="0">1</StopBits>
+        <FlowControl index="0">无</FlowControl>
+    </serialParam>
 </root>

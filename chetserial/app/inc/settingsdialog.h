@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QSerialPort>
 
+#define XML_NODE_SERIAL ("serialParam")
+
 QT_BEGIN_NAMESPACE
 
 namespace Ui {
@@ -36,15 +38,36 @@ public:
         bool localEchoEnabled;
     };
 
+    struct InterfaceSettings
+    {
+        quint8 baudRateIndex;
+        quint8 dataBitsIndex;
+        quint8 parityIndex;
+        quint8 stopBitsIndex;
+        quint8 flowControlIndex;
+        quint8 serialProtIndex;
+        QString baudRateText;
+
+    };
+
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
 
     Settings settings() const;
 
+    bool xmlInitSerialSettings(const QString xmlFile);
+    bool xmlSaveSerialSettings(const QString xmlFile);
+    bool xmlLoadSerialSettings(const QString xmlFile);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
+
 private slots:
     void showPortInfo(int idx);
-    void apply();
     void checkCustomBaudRatePolicy(int idx);
+
+    void on_applyButton_clicked();
 
 private:
     void fillPortsParameters();
@@ -55,6 +78,8 @@ private:
     Ui::SettingsDialog *m_ui = nullptr;
     Settings m_currentSettings;
     MyValidator *m_intValidator = nullptr;
+    InterfaceSettings m_validInterfaceCfg;
+
 };
 
 #endif // SETTINGSDIALOG_H
