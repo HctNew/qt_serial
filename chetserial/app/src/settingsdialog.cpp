@@ -10,8 +10,8 @@
 #include <QDomDocument>
 #include <QTextStream>
 #include <QDir>
+#include <QCloseEvent>
 
-#include <QDebug>
 
 
 static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
@@ -89,7 +89,6 @@ bool SettingsDialog::xmlInitSerialSettings(const QString xmlFile)
         childElem  = doc.createElement(QStringLiteral("DataBits"));
         text       = doc.createTextNode(m_currentSettings.stringDataBits);
         childElem.setAttribute("index", m_validInterfaceCfg.dataBitsIndex);
-        qDebug() << m_ui->dataBitsBox->currentIndex();
         childElem.appendChild(text);
         parentElem.appendChild(childElem);
 
@@ -180,8 +179,6 @@ bool SettingsDialog::xmlLoadSerialSettings(const QString xmlFile)
  */
 void SettingsDialog::closeEvent(QCloseEvent *event)
 {
-    Q_UNUSED(event);
-
     // 还原界面显示
     m_ui->baudRateBox->setCurrentIndex(             m_validInterfaceCfg.baudRateIndex   );
     m_ui->baudRateBox->setCurrentText(              m_validInterfaceCfg.baudRateText    );
@@ -191,7 +188,7 @@ void SettingsDialog::closeEvent(QCloseEvent *event)
     m_ui->flowControlBox->setCurrentIndex(          m_validInterfaceCfg.flowControlIndex);
     m_ui->serialPortInfoListBox->setCurrentIndex(   m_validInterfaceCfg.serialProtIndex );
 
-    reject();
+    event->accept();
 }
 
 

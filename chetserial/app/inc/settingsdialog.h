@@ -12,10 +12,11 @@ namespace Ui {
 class SettingsDialog;
 }
 
-class MyValidator;
+class QCloseEvent;
 
 QT_END_NAMESPACE
 
+class MyValidator;
 
 class SettingsDialog : public QDialog
 {

@@ -43,13 +43,15 @@ static bool loadLanguage(QObject *parent)
     {
         if (false == xmlHelper::xmlRead(XML_FILE, doc)) break;
 
-        QDomElement  root  = doc.documentElement();      // 返回根节点
-        QDomNodeList tmp   = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
-        QDomNode     node  = tmp.at(0).firstChild();
+        QDomElement  root       = doc.documentElement();      // 返回根节点
+        QDomNodeList nodeList   = root.elementsByTagName(QString(XML_NODE_MAINWINDOW));
 
+        nodeList  = nodeList.at(0).toElement().elementsByTagName("language");
+
+        QDomNode node = nodeList.at(0).firstChild();
 
         // 如果xml里有 XML_NODE_LANGUAGE 配置并且配置为中文，则加载中文翻译包
-        if ( (tmp.length() == 1) && (!node.isNull()) && (node.nodeValue() != QString(XML_LANGUAGE_DEFAULT) ))
+        if ((!node.isNull()) && (node.nodeValue() != QString(XML_LANGUAGE_DEFAULT) ))
         {
             QString strLanguageFile(":/language/zh_CN.qm");
             if (QFile(strLanguageFile).exists())

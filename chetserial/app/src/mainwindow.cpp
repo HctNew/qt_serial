@@ -12,6 +12,8 @@
 #include <QTextStream>
 #include <QDir>
 
+
+
 /**
  * @brief MainWindow::MainWindow
  * @param parent
@@ -29,15 +31,13 @@ MainWindow::MainWindow(QWidget *parent):
 
     m_ui->setupUi(this);
 
-    xmlInitLanguage(XML_FILE);
-    xmlLoadLanguage(XML_FILE);
     m_settings->xmlInitSerialSettings(XML_FILE);
     m_settings->xmlLoadSerialSettings(XML_FILE);
+    m_options->xmlInitOptions(XML_FILE);
+    m_options->xmlLoadOptions(XML_FILE);
+    xmlInitMainWindow(XML_FILE);
+    xmlLoadMainWindow(XML_FILE);
 
-
-    // 设置串口配置窗口和Options窗口为半模态，类似于置顶
-    //m_settings->setWindowModality(Qt::ApplicationModal);
-    m_options->setWindowModality(Qt::ApplicationModal);
 
     // 设置串口接收区和发送区的属性
     m_ui->sendTextEdit->setEnabled(true);
@@ -79,12 +79,71 @@ MainWindow::MainWindow(QWidget *parent):
     connect(m_serial,               &QSerialPort::errorOccurred,    this,       &MainWindow::handleError);
     connect(m_serial,               &QSerialPort::readyRead,        this,       &MainWindow::readData);
 
-    initOptions(m_options->options());
+    updateMainWindow();
 }
 
 MainWindow::~MainWindow()
 {
     delete m_ui;
+}
+
+bool MainWindow::xmlInitMainWindow(const QString &xmlFile)
+{
+    QDomDocument doc;
+
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
+
+    QDomElement root = doc.documentElement();      // 返回根节点
+    QDomNodeList nodeList = root.elementsByTagName(QString(XML_NODE_MAINWINDOW));
+    QDomElement parentElem = nodeList.at(0).toElement();
+
+    // 如果没有 XML_NODE_SERIAL 这个节点，则创建一个
+    if (parentElem.isNull())
+    {
+        parentElem = doc.createElement(QString(XML_NODE_MAINWINDOW));
+        root.appendChild(parentElem);
+    }
+
+    if (!parentElem.hasChildNodes())
+    {
+        xmlInitLanguage(parentElem, doc);
+
+        return xmlHelper::xmlWrite(xmlFile, doc);
+    }
+
+    return true;
+}
+
+bool MainWindow::xmlSaveMainWindow(const QString &xmlFile)
+{
+    QDomDocument doc;
+
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
+
+    QDomElement  root       = doc.documentElement();      // 返回根节点
+    QDomNodeList nodeList   = root.elementsByTagName(QString(XML_NODE_MAINWINDOW));
+    QDomElement  parentElem = nodeList.at(0).toElement();
+
+    xmlSaveLanguage(parentElem);
+
+    return xmlHelper::xmlWrite(xmlFile, doc);
+}
+
+bool MainWindow::xmlLoadMainWindow(const QString &xmlFile)
+{
+    QDomDocument doc;
+
+    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
+
+    QDomElement  root       = doc.documentElement();      // 返回根节点
+    QDomNodeList nodeList   = root.elementsByTagName(QString(XML_NODE_MAINWINDOW));
+    QDomElement  parentElem = nodeList.at(0).toElement();   // options元素
+
+    xmlLoadLanguage(parentElem);
+
+    updateMainWindow();
+
+    return true;
 }
 
 
@@ -119,7 +178,6 @@ void MainWindow::on_sendPushButton_clicked()
 
 }
 
-
 /**
  * @brief read serial data and show in the recvEdit
  */
@@ -135,8 +193,6 @@ void MainWindow::readData()
     }
 }
 
-
-
 void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError)
@@ -146,20 +202,39 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
     }
 }
 
-
 /**
  * @brief initialize options dialog settings
  * @param options
  */
-void MainWindow::initOptions(OptionsDialog::Options options)
+void MainWindow::updateOptions(OptionsDialog::Options options)
 {
     m_ui->recvTextEdit->setFont(options.m_font);
+    m_ui->sendTextEdit->setFont(options.m_font);
 
     // 需要使用QPalette来配置，不能使用setTextColor，因为setTextColor没有使lineEdit配置前输入的内容字体颜色生效。
     QPalette pe = m_ui->recvTextEdit->palette();
-    pe.setColor(QPalette::Text, options.m_fontColor);       // 字体颜色
+    pe.setColor(QPalette::Text, options.m_textColor);       // 字体颜色
     pe.setColor(QPalette::Base, options.m_backgroundColor); // lineEdit背景色
     m_ui->recvTextEdit->setPalette(pe);
+    m_ui->sendTextEdit->setPalette(pe);
+
+}
+
+void MainWindow::updateMainWindow()
+{
+    updateOptions(m_options->options());
+
+    // 如果xml里有 XML_NODE_LANGUAGE 配置并且配置为中文
+    if ( m_currentSettings.m_language == QString("Chinese") )
+    {
+        m_ui->actionChinese->setChecked(true);
+        m_ui->actionEnglish->setChecked(false);
+    }
+    else
+    {
+        m_ui->actionChinese->setChecked(false);
+        m_ui->actionEnglish->setChecked(true);
+    }
 }
 
 void MainWindow::showStatusMessage(QLabel *label, const QString &message, const QColor &acolor)
@@ -171,90 +246,32 @@ void MainWindow::showStatusMessage(QLabel *label, const QString &message, const 
     label->setText(message);
 }
 
-/**
- * @brief Initialize language setting in the xml
- * @param xmlFile
- * @return
- */
-bool MainWindow::xmlInitLanguage(const QString xmlFile)
+void MainWindow::xmlInitLanguage(QDomElement &parentElem, QDomDocument & doc)
 {
-    QDomDocument doc;
+    // 加入 “Display” 元素
+    QDomElement childElem = doc.createElement("language");
+    parentElem.appendChild(childElem);
 
-    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
-
-    QDomElement root = doc.documentElement();      // 返回根节点
-    QDomNodeList tmp = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
-
-    if(tmp.length() == 0)
-    {
-        QDomElement  node = doc.createElement(QString(XML_NODE_LANGUAGE));
-        QDomText     text = doc.createTextNode(XML_LANGUAGE_DEFAULT);
-        node.appendChild(text);
-        root.appendChild(node);
-
-        m_ui->actionChinese->setChecked(false);
-        m_ui->actionEnglish->setChecked(true);
-
-        return xmlHelper::xmlWrite(xmlFile, doc);
-    }
-
-    return true;
+    QDomText text = doc.createTextNode(XML_LANGUAGE_DEFAULT);
+    childElem.appendChild(text);
 }
 
-
-
-/**
- * @brief save Language setting
- * @param xmlFile   xml file "path/name"
- * @param str       language name
- * @return
- */
-bool MainWindow::xmlSaveLanguage(const QString xmlFile, QString str)
+void MainWindow::xmlSaveLanguage(QDomElement &parentElem)
 {
-    QDomDocument doc;
+    // 找出“language”元素
+    QDomNodeList nodeList = parentElem.elementsByTagName("language");
 
-    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
-
-    QDomElement root = doc.documentElement();      // 返回根节点
-    QDomNodeList tmp = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
-
-    tmp.at(0).firstChild().setNodeValue(str);
-
-    return xmlHelper::xmlWrite(xmlFile, doc);
+    // 因为我设计的时候不允许同级存在同名的节点，所以第一个就是我们想要的“找出“language”元素”元素节点
+    nodeList.at(0).firstChild().setNodeValue(m_currentSettings.m_language);
 }
 
-/**
- * @brief xml load language
- * @param xmlFile   xml file "path/name"
- * @return
- */
-bool MainWindow::xmlLoadLanguage(const QString xmlFile)
+void MainWindow::xmlLoadLanguage(QDomElement &parentElem)
 {
-    QDomDocument doc;
+    // 找出“language”元素
+    QDomNodeList nodeList = parentElem.elementsByTagName("language");
 
-    if (false == xmlHelper::xmlRead(xmlFile, doc)) return false;
-
-    QDomElement  root  = doc.documentElement();      // 返回根节点
-    QDomNodeList tmp   = root.elementsByTagName(QString(XML_NODE_LANGUAGE));
-    QDomNode     node  = tmp.at(0).firstChild();
-
-
-    // 如果xml里有 XML_NODE_LANGUAGE 配置并且配置为中文
-    if ( node.nodeValue() == QString("Chinese") )
-    {
-        m_ui->actionChinese->setChecked(true);
-        m_ui->actionEnglish->setChecked(false);
-    }
-    else
-    {
-        m_ui->actionChinese->setChecked(false);
-        m_ui->actionEnglish->setChecked(true);
-    }
-
-    return true;
+    m_currentSettings.m_language = nodeList.at(0).firstChild().nodeValue();
 }
-
-
 
 QByteArray MainWindow::str2Hex(const QString & str)
 {
@@ -358,12 +375,13 @@ void MainWindow::showReadOrWriteData(const QByteArray &data, uint8_t rdSelect)
     m_ui->recvTextEdit->showData(strDis);
 }
 
-
 void MainWindow::on_actionOptions_triggered()
 {
-    if (m_options->exec())
+
+    if (m_options->exec() == m_options->Accepted)
     {
-        initOptions(m_options->options());
+        updateOptions(m_options->options());
+        m_options->xmlSaveOptions(XML_FILE);
     }
 }
 
@@ -377,10 +395,11 @@ void MainWindow::on_actionChinese_triggered()
 
     m_ui->actionEnglish->setChecked(false);
 
-    if (true == xmlSaveLanguage(XML_FILE, QString("Chinese")))
+    m_currentSettings.m_language = QString("Chinese");
+    if (true == xmlSaveMainWindow(XML_FILE))
     {
         QMessageBox::information(this, tr("Language Setting"),
-                                 tr("The changed will take effect when the program is restarted."));
+                                  tr("The changed will take effect when the program is restarted."));
     }
     else
     {
@@ -399,7 +418,8 @@ void MainWindow::on_actionEnglish_triggered()
 
     m_ui->actionChinese->setChecked(false);
 
-    if (true == xmlSaveLanguage(XML_FILE, QString("English")))
+    m_currentSettings.m_language = QString("English");
+    if (true == xmlSaveMainWindow(XML_FILE))
     {
         QMessageBox::information(this, tr("Language Setting"),
                                  tr("The changed will take effect when the program is restarted."));

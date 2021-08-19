@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "optionsdialog.h"
 
+#define XML_NODE_MAINWINDOW     ("mainwindow")
 #define XML_NODE_LANGUAGE       ("language")
 #define XML_LANGUAGE_DEFAULT    ("English")
 
@@ -32,8 +33,19 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    struct MainWindowSettings
+    {
+        QString m_language = QString(XML_LANGUAGE_DEFAULT);
+    };
+
+
+public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    bool xmlInitMainWindow(const QString &xmlFile);
+    bool xmlSaveMainWindow(const QString &xmlFile);
+    bool xmlLoadMainWindow(const QString &xmlFile);
 
 private slots:
     void readData();
@@ -56,8 +68,9 @@ private slots:
 
     void on_actionDisconnect_triggered();
 
-
     void on_actionConfigure_triggered();
+
+
 
 private:
     enum
@@ -73,11 +86,12 @@ private:
 
     void showStatusMessage(QLabel *label, const QString &message,
                            const QColor &acolor = Qt::black);
-    void initOptions(OptionsDialog::Options options);
+    void updateOptions(OptionsDialog::Options options);
+    void updateMainWindow();
 
-    bool xmlInitLanguage(const QString xmlFile);
-    bool xmlSaveLanguage(const QString xmlFile, QString str);
-    bool xmlLoadLanguage(const QString xmlFile);
+    void xmlInitLanguage(QDomElement &parentElem, QDomDocument & doc);
+    void xmlSaveLanguage(QDomElement &parentElem);
+    void xmlLoadLanguage(QDomElement &parentElem);
 
 private:
 
@@ -88,6 +102,7 @@ private:
     SettingsDialog *m_settings  = nullptr;
     QSerialPort *m_serial       = nullptr;
     OptionsDialog *m_options    = nullptr;
+    MainWindowSettings m_currentSettings;
 
     long m_rxCount;
     long m_txCount;

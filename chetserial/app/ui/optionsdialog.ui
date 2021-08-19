@@ -80,7 +80,7 @@
      </property>
      <widget class="QWidget" name="fontSet">
       <attribute name="title">
-       <string>Font</string>
+       <string>Display</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0" colspan="2">
@@ -299,11 +299,6 @@
     </widget>
    </item>
   </layout>
-  <action name="action3">
-   <property name="text">
-    <string>3</string>
-   </property>
-  </action>
  </widget>
  <resources/>
  <connections/>
