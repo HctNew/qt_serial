@@ -4,6 +4,7 @@
 #include "settingsdialog.h"
 #include "xmlhelper.h"
 
+#include <QDesktopWidget>
 #include <QLabel>
 #include <QMessageBox>
 #include <QDateTime>
@@ -79,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent):
     connect(m_serial,               &QSerialPort::errorOccurred,    this,       &MainWindow::handleError);
     connect(m_serial,               &QSerialPort::readyRead,        this,       &MainWindow::readData);
 
-    updateMainWindow();
+    updateOptions(m_options->options());
 }
 
 MainWindow::~MainWindow()
@@ -107,6 +108,7 @@ bool MainWindow::xmlInitMainWindow(const QString &xmlFile)
     if (!parentElem.hasChildNodes())
     {
         xmlInitLanguage(parentElem, doc);
+        xmlInitWinPos(parentElem,doc);
 
         return xmlHelper::xmlWrite(xmlFile, doc);
     }
@@ -125,6 +127,7 @@ bool MainWindow::xmlSaveMainWindow(const QString &xmlFile)
     QDomElement  parentElem = nodeList.at(0).toElement();
 
     xmlSaveLanguage(parentElem);
+    xmlSaveWinPos(parentElem);
 
     return xmlHelper::xmlWrite(xmlFile, doc);
 }
@@ -140,8 +143,7 @@ bool MainWindow::xmlLoadMainWindow(const QString &xmlFile)
     QDomElement  parentElem = nodeList.at(0).toElement();   // options元素
 
     xmlLoadLanguage(parentElem);
-
-    updateMainWindow();
+    xmlLoadWinPos(parentElem);
 
     return true;
 }
@@ -220,23 +222,6 @@ void MainWindow::updateOptions(OptionsDialog::Options options)
 
 }
 
-void MainWindow::updateMainWindow()
-{
-    updateOptions(m_options->options());
-
-    // 如果xml里有 XML_NODE_LANGUAGE 配置并且配置为中文
-    if ( m_currentSettings.m_language == QString("Chinese") )
-    {
-        m_ui->actionChinese->setChecked(true);
-        m_ui->actionEnglish->setChecked(false);
-    }
-    else
-    {
-        m_ui->actionChinese->setChecked(false);
-        m_ui->actionEnglish->setChecked(true);
-    }
-}
-
 void MainWindow::showStatusMessage(QLabel *label, const QString &message, const QColor &acolor)
 {
     QPalette pe;
@@ -271,6 +256,64 @@ void MainWindow::xmlLoadLanguage(QDomElement &parentElem)
     QDomNodeList nodeList = parentElem.elementsByTagName("language");
 
     m_currentSettings.m_language = nodeList.at(0).firstChild().nodeValue();
+
+    // 如果xml里有 XML_NODE_LANGUAGE 配置并且配置为中文
+    if ( m_currentSettings.m_language == QString("Chinese") )
+    {
+        m_ui->actionChinese->setChecked(true);
+        m_ui->actionEnglish->setChecked(false);
+    }
+    else
+    {
+        m_ui->actionChinese->setChecked(false);
+        m_ui->actionEnglish->setChecked(true);
+    }
+}
+
+void MainWindow::xmlInitWinPos(QDomElement &parentElem, QDomDocument & doc)
+{
+    // 加入 “Display” 元素
+    QDomElement childElem = doc.createElement("winPosition");
+
+    QDesktopWidget *pDesk = QApplication::desktop();
+    childElem.setAttribute("x", (pDesk->width() - this->width()) / 2);
+    childElem.setAttribute("y", (pDesk->height() - this->height()) / 2);
+    childElem.setAttribute("width", this->width());
+    childElem.setAttribute("height", this->height());
+    parentElem.appendChild(childElem);
+
+    //delete pDesk;
+}
+void MainWindow::xmlSaveWinPos(QDomElement &parentElem)
+{
+    // 找出“winPosition”元素
+    QDomNodeList nodeList = parentElem.elementsByTagName("winPosition");
+    QDomElement elem      = nodeList.at(0).toElement();
+
+    elem.setAttribute("x", this->x());
+    elem.setAttribute("y", this->y());
+    elem.setAttribute("width", this->width());
+    elem.setAttribute("height", this->height());
+}
+void MainWindow::xmlLoadWinPos(QDomElement &parentElem)
+{
+    // 找出“language”元素
+    QDomNodeList nodeList = parentElem.elementsByTagName("winPosition");
+    QDomElement elem      = nodeList.at(0).toElement();
+
+    this->setGeometry(elem.attribute("x").toInt(),
+                      elem.attribute("y").toInt(),
+                      elem.attribute("width").toInt(),
+                      elem.attribute("height").toInt());
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event);
+
+    xmlSaveMainWindow(XML_FILE);
+
+    qApp->quit();
 }
 
 QByteArray MainWindow::str2Hex(const QString & str)

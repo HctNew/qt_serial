@@ -10,7 +10,6 @@
 #include <QDomDocument>
 #include <QTextStream>
 #include <QDir>
-#include <QCloseEvent>
 
 
 
@@ -187,8 +186,6 @@ void SettingsDialog::closeEvent(QCloseEvent *event)
     m_ui->stopBitsBox->setCurrentIndex(             m_validInterfaceCfg.stopBitsIndex   );
     m_ui->flowControlBox->setCurrentIndex(          m_validInterfaceCfg.flowControlIndex);
     m_ui->serialPortInfoListBox->setCurrentIndex(   m_validInterfaceCfg.serialProtIndex );
-
-    event->accept();
 }
 
 

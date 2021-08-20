@@ -9,7 +9,6 @@
 #include <QDomDocument>
 #include <QTextStream>
 #include <QDir>
-#include <QCloseEvent>
 
 #define XML_NODE_OPTIONS    ("options")
 

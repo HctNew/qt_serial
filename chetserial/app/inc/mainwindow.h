@@ -16,6 +16,7 @@ QT_BEGIN_NAMESPACE
 class QLabel;
 class QString;
 class QDomDocument;
+class QRect;
 
 namespace Ui {
 class MainWindow;
@@ -87,11 +88,17 @@ private:
     void showStatusMessage(QLabel *label, const QString &message,
                            const QColor &acolor = Qt::black);
     void updateOptions(OptionsDialog::Options options);
-    void updateMainWindow();
 
     void xmlInitLanguage(QDomElement &parentElem, QDomDocument & doc);
     void xmlSaveLanguage(QDomElement &parentElem);
     void xmlLoadLanguage(QDomElement &parentElem);
+
+    void xmlInitWinPos(QDomElement &parentElem, QDomDocument & doc);
+    void xmlSaveWinPos(QDomElement &parentElem);
+    void xmlLoadWinPos(QDomElement &parentElem);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
 
