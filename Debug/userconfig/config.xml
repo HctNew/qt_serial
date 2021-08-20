@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root>
     <serialParam>
-        <BaudRate index="0">9600</BaudRate>
+        <BaudRate index="3">115200</BaudRate>
         <DataBits index="3">8</DataBits>
         <Parity index="0">None</Parity>
         <StopBits index="0">1</StopBits>
@@ -9,7 +9,7 @@
     </serialParam>
     <options>
         <Display>
-            <FontStyle string="微软雅黑,9,-1,5,50,0,0,0,0,0,Regular"/>
+            <FontStyle string="微软雅黑,10,-1,5,50,0,0,0,0,0,Regular"/>
             <Color>
                 <text rgb="ff000000"/>
                 <background rgb="ffffffff"/>
@@ -18,6 +18,6 @@
     </options>
     <mainwindow>
         <language>English</language>
-        <winPosition y="278" height="399" width="525" x="725"/>
+        <winPosition height="399" y="2" x="190" width="525"/>
     </mainwindow>
 </root>

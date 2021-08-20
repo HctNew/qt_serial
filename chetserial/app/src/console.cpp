@@ -11,7 +11,7 @@ Console::Console(QWidget *parent) :
     QTextEdit(parent)
 {
     // 最大行数限制，超过的将从最前面重新开始
-    document()->setMaximumBlockCount(100);
+    //document()->setMaximumBlockCount(100);
 
     //默认的标准右键菜单，如果不需要刻意完全自己实现
     m_menu = createStandardContextMenu();
