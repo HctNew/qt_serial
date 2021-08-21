@@ -5,12 +5,15 @@
 #include <QDebug>
 #include <QFontDialog>
 #include <QColorDialog>
+#include <QFileDialog>
 #include <QFile>
 #include <QDomDocument>
 #include <QTextStream>
+#include <QMessageBox>
 #include <QDir>
 
 #define XML_NODE_OPTIONS    ("options")
+#define DEFAULT_LOGPATH     ("log")
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
@@ -23,9 +26,16 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_currentOptions.m_font.setStyleName("Regular");
     m_currentOptions.m_textColor.setRgb(0, 0, 0);
     m_currentOptions.m_backgroundColor.setRgb(255, 255, 255);
+    m_currentOptions.m_isAutoSaveLog = m_ui->autoLogcheckBox->isChecked();
+    m_currentOptions.m_logFilePath = QString(QDir::currentPath() + "/" + DEFAULT_LOGPATH);
     m_uncertainOptions = m_currentOptions;
 
     updateOptions();
+}
+
+OptionsDialog::~OptionsDialog()
+{
+    delete m_ui;
 }
 
 void OptionsDialog::updateOptions()
@@ -47,29 +57,38 @@ void OptionsDialog::updateOptions()
                                              arg(m_currentOptions.m_backgroundColor.green()).
                                              arg(m_currentOptions.m_backgroundColor.blue())
                                            );
+
+    m_ui->autoLogcheckBox->setChecked(m_currentOptions.m_isAutoSaveLog);
+    m_ui->logPathLineEdit->setText(m_currentOptions.m_logFilePath);
+
 }
 
 void OptionsDialog::xmlInitDisplaySettings(QDomElement &parentElem, QDomDocument & doc)
 {
-    // 加入 “Display” 元素
-    QDomElement childElem = doc.createElement("Display");
-    parentElem.appendChild(childElem);
+    QDomNodeList nodeList = parentElem.elementsByTagName("Display");
 
-    // Display.childNode.at(0)
-    QDomElement fontStyleElem = doc.createElement("FontStyle");
-    fontStyleElem.setAttribute("string",  m_currentOptions.m_font.toString());
-    childElem.appendChild(fontStyleElem);
+    if (nodeList.count() == 0)
+    {
+        // 加入 “Display” 元素
+        QDomElement childElem = doc.createElement("Display");
+        parentElem.appendChild(childElem);
 
-    // Display.childNode.at(1)
-    QDomElement colorElem   = doc.createElement("Color");
-    QDomElement elem        = doc.createElement("text");
-    elem.setAttribute("rgb", QString::number(m_currentOptions.m_textColor.rgb(), 16));
-    colorElem.appendChild(elem); // Color.childNode.at(0)
+        // Display.childNode.at(0)
+        QDomElement fontStyleElem = doc.createElement("FontStyle");
+        fontStyleElem.setAttribute("string",  m_currentOptions.m_font.toString());
+        childElem.appendChild(fontStyleElem);
 
-    elem = doc.createElement("background");
-    elem.setAttribute("rgb", QString::number(m_currentOptions.m_backgroundColor.rgb(), 16));
-    colorElem.appendChild(elem); // Color.childNode.at(1)
-    childElem.appendChild(colorElem);
+        // Display.childNode.at(1)
+        QDomElement colorElem   = doc.createElement("Color");
+        QDomElement elem        = doc.createElement("text");
+        elem.setAttribute("rgb", QString::number(m_currentOptions.m_textColor.rgb(), 16));
+        colorElem.appendChild(elem); // Color.childNode.at(0)
+
+        elem = doc.createElement("background");
+        elem.setAttribute("rgb", QString::number(m_currentOptions.m_backgroundColor.rgb(), 16));
+        colorElem.appendChild(elem); // Color.childNode.at(1)
+        childElem.appendChild(colorElem);
+    }
 }
 
 void OptionsDialog::xmlSaveDisPlaySettings(QDomElement &parentElem)
@@ -112,10 +131,52 @@ void OptionsDialog::xmlLoadDisPlaySettings(const QDomElement &parentElem)
     m_currentOptions.m_backgroundColor = QColor::fromRgb(elem.attribute("rgb").toUInt(nullptr, 16));
 }
 
-
-OptionsDialog::~OptionsDialog()
+void OptionsDialog::xmlInitLogPath(QDomElement &parentElem, QDomDocument &doc)
 {
-    delete m_ui;
+    QDomNodeList nodeList = parentElem.elementsByTagName("Log");
+
+    if (nodeList.count() == 0)
+    {
+        // 加入 Log 元素
+        QDomElement childElem = doc.createElement("Log");
+        childElem.setAttribute("Enable", m_currentOptions.m_isAutoSaveLog);
+
+        QDomElement elem  = doc.createElement(QStringLiteral("Path"));
+        QDomText    text  = doc.createTextNode(m_currentOptions.m_logFilePath);
+        elem.appendChild(text);
+
+        childElem.appendChild(elem);
+        parentElem.appendChild(childElem);
+    }
+}
+
+void OptionsDialog::xmlSaveLogPath(QDomElement &parentElem)
+{
+    QDomElement  elem;
+    QDomNode     node;
+    QDomNodeList nodeList;
+
+    nodeList = parentElem.elementsByTagName("Log");
+    nodeList.at(0).toElement().setAttribute("Enable", m_currentOptions.m_isAutoSaveLog);
+
+    node = nodeList.at(0).firstChild(); // "path"
+    node.firstChild().setNodeValue(m_currentOptions.m_logFilePath);
+}
+
+void OptionsDialog::xmlLoadLogPath(const QDomElement &parentElem)
+{
+    QDomElement  elem;
+    QDomNode     node;
+    QDomNodeList nodeList;
+
+    nodeList = parentElem.elementsByTagName("Log");
+
+    // QString强制转换为QVariant类型
+    m_currentOptions.m_isAutoSaveLog = static_cast<QVariant>(
+                                    nodeList.at(0).toElement().attribute("Enable")).toBool();
+
+    node = nodeList.at(0).firstChild(); // "path"
+    m_currentOptions.m_logFilePath = node.firstChild().nodeValue();
 }
 
 bool OptionsDialog::xmlInitOptions(const QString xmlFile)
@@ -135,14 +196,10 @@ bool OptionsDialog::xmlInitOptions(const QString xmlFile)
         root.appendChild(parentElem);
     }
 
-    if (!parentElem.hasChildNodes())
-    {
-        xmlInitDisplaySettings(parentElem, doc);
+    xmlInitDisplaySettings(parentElem, doc);
+    xmlInitLogPath(parentElem, doc);
 
-        return xmlHelper::xmlWrite(xmlFile, doc);
-    }
-
-    return true;
+    return xmlHelper::xmlWrite(xmlFile, doc);
 }
 
 bool OptionsDialog::xmlSaveOptions(const QString xmlFile)
@@ -156,6 +213,7 @@ bool OptionsDialog::xmlSaveOptions(const QString xmlFile)
     QDomElement  parentElem = nodeList.at(0).toElement();   // options元素
 
     xmlSaveDisPlaySettings(parentElem);
+    xmlSaveLogPath(parentElem);
 
     return xmlHelper::xmlWrite(xmlFile, doc);
 }
@@ -171,6 +229,7 @@ bool OptionsDialog::xmlLoadOptions(const QString xmlFile)
     QDomElement  parentElem = nodeList.at(0).toElement();   // options元素
 
     xmlLoadDisPlaySettings(parentElem);
+    xmlLoadLogPath(parentElem);
 
     m_uncertainOptions = m_currentOptions;
     updateOptions();
@@ -274,7 +333,6 @@ void OptionsDialog::on_defaultColorButton_clicked()
 void OptionsDialog::closeEvent(QCloseEvent *event)
 {
 
-
     if (m_isChanged)
     {
         m_isChanged = false;
@@ -290,3 +348,24 @@ void OptionsDialog::closeEvent(QCloseEvent *event)
     Q_UNUSED(event);
     //event->accept(); // 默认就是accept()，所以这里可以不同手动accept()
 }
+
+void OptionsDialog::on_logPathSelectButton_clicked()
+{
+    QString filePath = QFileDialog::getExistingDirectory(this, tr("选择日志保存路径...", "./"));
+    if (filePath != "\0")
+    {
+        m_ui->logPathLineEdit->setText(filePath);
+        m_uncertainOptions.m_logFilePath = filePath;
+    }
+}
+
+void OptionsDialog::on_logPathLineEdit_returnPressed()
+{
+    m_uncertainOptions.m_logFilePath = m_ui->logPathLineEdit->text();
+}
+
+void OptionsDialog::on_autoLogcheckBox_stateChanged(int arg1)
+{
+    m_uncertainOptions.m_isAutoSaveLog = arg1;
+}
+

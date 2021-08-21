@@ -27,6 +27,8 @@ public:
         QFont   m_font;
         QColor  m_textColor;
         QColor  m_backgroundColor;
+        bool    m_isAutoSaveLog;
+        QString m_logFilePath;
     };
 
 public:
@@ -34,6 +36,8 @@ public:
     ~OptionsDialog();
 
     Options options() const { return m_currentOptions; };
+    bool isRecordLog() { return m_currentOptions.m_isAutoSaveLog; };
+    QString logFilePath() { return  m_currentOptions.m_logFilePath; };
 
     bool xmlInitOptions(const QString xmlFile);
     bool xmlSaveOptions(const QString xmlFile);
@@ -45,7 +49,12 @@ private:
     void xmlSaveDisPlaySettings(QDomElement &parentElem);
     void xmlLoadDisPlaySettings(const QDomElement &parentElem);
 
+    void xmlInitLogPath(QDomElement &parentElem, QDomDocument & doc);
+    void xmlSaveLogPath(QDomElement &parentElem);
+    void xmlLoadLogPath(const QDomElement &parentElem);
+
 private slots:
+
     void on_fontConfigButton_clicked();
 
     void on_applyButton_clicked();
@@ -59,6 +68,13 @@ private slots:
     void on_bgColorToolButton_clicked();
 
     void on_defaultColorButton_clicked();
+
+    void on_logPathSelectButton_clicked();
+
+    void on_logPathLineEdit_returnPressed();
+
+    void on_autoLogcheckBox_stateChanged(int arg1);
+
 
 protected:
     void closeEvent(QCloseEvent *event) override;

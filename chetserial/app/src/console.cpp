@@ -7,6 +7,8 @@
 #include <QMessageBox>
 
 
+
+
 Console::Console(QWidget *parent) :
     QTextEdit(parent)
 {
@@ -20,6 +22,23 @@ Console::Console(QWidget *parent) :
     setShowSendEnable(true);
 }
 
+void Console::setHexModeChecked(bool bSet)
+{
+    m_hexModeSet = bSet;
+    hexMenuItem->setChecked(bSet);
+}
+
+void Console::setTimeStampChecked(bool bSet)
+{
+    m_timeStampSet = bSet;
+    timeStampMenuItem->setChecked(bSet);
+}
+
+void Console::setShowSendChecked(bool bSet)
+{
+    m_showSend = bSet;
+    showSendMenuItem->setChecked(bSet);
+}
 
 void Console::showData(const QString &data)
 {

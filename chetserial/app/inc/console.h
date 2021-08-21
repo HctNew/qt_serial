@@ -14,20 +14,20 @@ class Console : public QTextEdit
     Q_OBJECT
 
 
-signals:
-    void getData(const QByteArray &data);
-
-private slots:
-    void setHexModeChecked(bool   bSet){ m_hexModeSet   = bSet;   };
-    void setTimeStampChecked(bool bSet){ m_timeStampSet = bSet;   };
-    void setShowSendChecked(bool  bSet){ m_showSend     = bSet;   };
-
-
 public:
     explicit Console(QWidget *parent = nullptr);
 
     void showData(const QString &data);
     void setLocalEchoEnabled(bool bSet) { m_localEchoEnaled = bSet; };
+
+signals:
+    void getData(const QByteArray &data);
+
+public slots:
+    void setHexModeChecked(bool   bSet);
+    void setTimeStampChecked(bool bSet);;
+    void setShowSendChecked(bool  bSet);;
+
 
 public:
     void setHexModeEnable(bool   bSet);

@@ -31,6 +31,7 @@ SOURCES += \
     app/src/mainwindow.cpp \
     app/src/optionsdialog.cpp \
     app/src/settingsdialog.cpp \
+    tool/src/logger.cpp \
     tool/src/xmlhelper.cpp
 
 HEADERS += \
@@ -39,6 +40,7 @@ HEADERS += \
     app/inc/myintValidator.h \
     app/inc/optionsdialog.h \
     app/inc/settingsdialog.h \
+    tool/inc/logger.h \
     tool/inc/xmlhelper.h
 
 FORMS += \

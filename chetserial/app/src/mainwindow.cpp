@@ -3,6 +3,7 @@
 #include "console.h"
 #include "settingsdialog.h"
 #include "xmlhelper.h"
+#include "logger.h"
 
 #include <QDesktopWidget>
 #include <QLabel>
@@ -105,13 +106,11 @@ bool MainWindow::xmlInitMainWindow(const QString &xmlFile)
         root.appendChild(parentElem);
     }
 
-    if (!parentElem.hasChildNodes())
-    {
-        xmlInitLanguage(parentElem, doc);
-        xmlInitWinPos(parentElem,doc);
 
-        return xmlHelper::xmlWrite(xmlFile, doc);
-    }
+    xmlInitLanguage(parentElem, doc);
+    xmlInitWinCfg(parentElem,doc);
+
+    return xmlHelper::xmlWrite(xmlFile, doc);
 
     return true;
 }
@@ -127,7 +126,7 @@ bool MainWindow::xmlSaveMainWindow(const QString &xmlFile)
     QDomElement  parentElem = nodeList.at(0).toElement();
 
     xmlSaveLanguage(parentElem);
-    xmlSaveWinPos(parentElem);
+    xmlSaveWinCfg(parentElem);
 
     return xmlHelper::xmlWrite(xmlFile, doc);
 }
@@ -143,7 +142,7 @@ bool MainWindow::xmlLoadMainWindow(const QString &xmlFile)
     QDomElement  parentElem = nodeList.at(0).toElement();   // options元素
 
     xmlLoadLanguage(parentElem);
-    xmlLoadWinPos(parentElem);
+    xmlLoadWinCfg(parentElem);
 
     return true;
 }
@@ -233,12 +232,18 @@ void MainWindow::showStatusMessage(QLabel *label, const QString &message, const 
 
 void MainWindow::xmlInitLanguage(QDomElement &parentElem, QDomDocument & doc)
 {
-    // 加入 “Display” 元素
-    QDomElement childElem = doc.createElement("language");
-    parentElem.appendChild(childElem);
+    QDomNodeList nodeList = parentElem.elementsByTagName("language");
+    if (nodeList.count() == 0)
+    {
+        // 加入 “Display” 元素
+        QDomElement childElem = doc.createElement("language");
+        parentElem.appendChild(childElem);
 
-    QDomText text = doc.createTextNode(XML_LANGUAGE_DEFAULT);
-    childElem.appendChild(text);
+        QDomText text = doc.createTextNode(XML_LANGUAGE_DEFAULT);
+        childElem.appendChild(text);
+    }
+
+
 }
 
 void MainWindow::xmlSaveLanguage(QDomElement &parentElem)
@@ -270,41 +275,102 @@ void MainWindow::xmlLoadLanguage(QDomElement &parentElem)
     }
 }
 
-void MainWindow::xmlInitWinPos(QDomElement &parentElem, QDomDocument & doc)
+void MainWindow::xmlInitWinCfg(QDomElement &parentElem, QDomDocument & doc)
 {
-    // 加入 “Display” 元素
-    QDomElement childElem = doc.createElement("winPosition");
+    QDomNodeList nodeList = parentElem.elementsByTagName("winCfg");
+    if (nodeList.count() == 0)
+    {
+        QDomElement elem, childElem;
 
-    QDesktopWidget *pDesk = QApplication::desktop();
-    childElem.setAttribute("x", (pDesk->width() - this->width()) / 2);
-    childElem.setAttribute("y", (pDesk->height() - this->height()) / 2);
-    childElem.setAttribute("width", this->width());
-    childElem.setAttribute("height", this->height());
-    parentElem.appendChild(childElem);
 
-    //delete pDesk;
+        childElem = doc.createElement("winCfg");
+        parentElem.appendChild(childElem);
+
+        // winPosition
+        elem = doc.createElement("winPosition");
+        QDesktopWidget *pDesk = QApplication::desktop();
+        elem.setAttribute("x", (pDesk->width() - this->width()) / 2);
+        elem.setAttribute("y", (pDesk->height() - this->height()) / 2);
+        elem.setAttribute("width", this->width());
+        elem.setAttribute("height", this->height());
+        childElem.appendChild(elem);
+
+        // contextMenu
+        QDomElement contextElem = doc.createElement("contextMenu");
+        childElem.appendChild(contextElem);
+
+        elem = doc.createElement("HEX");
+        elem.setAttribute("RW", "R");
+        elem.setAttribute("Enable", m_ui->recvTextEdit->isHexModeChecked());
+        contextElem.appendChild(elem);
+
+        elem = doc.createElement("HEX");
+        elem.setAttribute("RW", "W");
+        elem.setAttribute("Enable", m_ui->sendTextEdit->isHexModeChecked());
+        contextElem.appendChild(elem);
+
+        elem = doc.createElement("TimeStamp");
+        elem.setAttribute("Enable", m_ui->recvTextEdit->isTimeStampChecked());
+        contextElem.appendChild(elem);
+
+        elem = doc.createElement("ShowSend");
+        elem.setAttribute("Enable", m_ui->recvTextEdit->isShowSendChecked());
+        contextElem.appendChild(elem);
+    }
+
 }
-void MainWindow::xmlSaveWinPos(QDomElement &parentElem)
+void MainWindow::xmlSaveWinCfg(QDomElement &parentElem)
 {
-    // 找出“winPosition”元素
-    QDomNodeList nodeList = parentElem.elementsByTagName("winPosition");
-    QDomElement elem      = nodeList.at(0).toElement();
+    QDomElement elem, childElem;
 
-    elem.setAttribute("x", this->x());
-    elem.setAttribute("y", this->y());
+    // 找出“winPosition”元素
+    QDomNodeList nodeList = parentElem.elementsByTagName("winCfg");
+    childElem = nodeList.at(0).toElement();
+
+
+    nodeList = childElem.elementsByTagName("winPosition");
+    elem     = nodeList.at(0).toElement();
+
+    elem.setAttribute("x", this->pos().x());
+    elem.setAttribute("y", this->pos().y());
     elem.setAttribute("width", this->width());
     elem.setAttribute("height", this->height());
-}
-void MainWindow::xmlLoadWinPos(QDomElement &parentElem)
-{
-    // 找出“language”元素
-    QDomNodeList nodeList = parentElem.elementsByTagName("winPosition");
-    QDomElement elem      = nodeList.at(0).toElement();
 
-    this->setGeometry(elem.attribute("x").toInt(),
-                      elem.attribute("y").toInt(),
-                      elem.attribute("width").toInt(),
-                      elem.attribute("height").toInt());
+    nodeList = childElem.elementsByTagName("contextMenu");
+    elem     = nodeList.at(0).toElement();
+
+    nodeList = elem.childNodes();
+    nodeList.at(0).toElement().setAttribute("Enable", m_ui->recvTextEdit->isHexModeChecked());
+    nodeList.at(1).toElement().setAttribute("Enable", m_ui->sendTextEdit->isHexModeChecked());
+    nodeList.at(2).toElement().setAttribute("Enable", m_ui->recvTextEdit->isTimeStampChecked());
+    nodeList.at(3).toElement().setAttribute("Enable", m_ui->recvTextEdit->isShowSendChecked());
+
+
+}
+void MainWindow::xmlLoadWinCfg(QDomElement &parentElem)
+{
+    QDomElement childElem, elem;
+    QDomNodeList nodeList;
+
+    // 找出“language”元素
+    nodeList  = parentElem.elementsByTagName("winCfg");
+    childElem = nodeList.at(0).toElement();
+
+    nodeList = childElem.elementsByTagName("winPosition");
+    elem     = nodeList.at(0).toElement();
+
+    this->move(elem.attribute("x").toInt(), elem.attribute("y").toInt());
+    this->resize(elem.attribute("width").toInt(), elem.attribute("height").toInt());
+
+    nodeList = childElem.elementsByTagName("contextMenu");
+    elem     = nodeList.at(0).toElement();
+    nodeList = elem.childNodes();
+
+    m_ui->recvTextEdit->setHexModeChecked(   nodeList.at(0).toElement().attribute("Enable").toInt());
+    m_ui->sendTextEdit->setHexModeChecked(   nodeList.at(1).toElement().attribute("Enable").toInt());
+    m_ui->recvTextEdit->setTimeStampChecked( nodeList.at(2).toElement().attribute("Enable").toInt());
+    m_ui->recvTextEdit->setShowSendChecked(  nodeList.at(3).toElement().attribute("Enable").toInt());
+
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -416,6 +482,11 @@ void MainWindow::showReadOrWriteData(const QByteArray &data, uint8_t rdSelect)
     }
 
     m_ui->recvTextEdit->showData(strDis);
+
+    if (m_options->isRecordLog())
+    {
+        logger::write(m_options->logFilePath(), strDis);
+    }
 }
 
 void MainWindow::on_actionOptions_triggered()

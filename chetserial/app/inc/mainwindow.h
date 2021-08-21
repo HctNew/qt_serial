@@ -93,9 +93,9 @@ private:
     void xmlSaveLanguage(QDomElement &parentElem);
     void xmlLoadLanguage(QDomElement &parentElem);
 
-    void xmlInitWinPos(QDomElement &parentElem, QDomDocument & doc);
-    void xmlSaveWinPos(QDomElement &parentElem);
-    void xmlLoadWinPos(QDomElement &parentElem);
+    void xmlInitWinCfg(QDomElement &parentElem, QDomDocument & doc);
+    void xmlSaveWinCfg(QDomElement &parentElem);
+    void xmlLoadWinCfg(QDomElement &parentElem);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

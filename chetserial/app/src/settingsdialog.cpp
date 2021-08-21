@@ -178,6 +178,8 @@ bool SettingsDialog::xmlLoadSerialSettings(const QString xmlFile)
  */
 void SettingsDialog::closeEvent(QCloseEvent *event)
 {
+    Q_UNUSED(event);
+
     // 还原界面显示
     m_ui->baudRateBox->setCurrentIndex(             m_validInterfaceCfg.baudRateIndex   );
     m_ui->baudRateBox->setCurrentText(              m_validInterfaceCfg.baudRateText    );

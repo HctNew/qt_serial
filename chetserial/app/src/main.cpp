@@ -6,6 +6,7 @@
 #include <QDomDocument>
 #include <QTranslator>
 #include <QMessageBox>
+#include <QStyleFactory>
 #include "xmlhelper.h"
 
 static bool loadLanguage(QObject *parent);
@@ -13,6 +14,7 @@ static bool loadLanguage(QObject *parent);
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
 
     xmlHelper::initXml();
     if (false == loadLanguage(&a))
