@@ -22,7 +22,7 @@
     <mainwindow>
         <language>English</language>
         <winCfg>
-            <winPosition width="615" y="340" x="652" height="399"/>
+            <winPosition y="340" height="399" x="652" width="615"/>
             <contextMenu>
                 <HEX Enable="0" RW="R"/>
                 <HEX Enable="0" RW="W"/>

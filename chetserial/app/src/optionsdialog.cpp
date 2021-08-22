@@ -351,7 +351,7 @@ void OptionsDialog::closeEvent(QCloseEvent *event)
 
 void OptionsDialog::on_logPathSelectButton_clicked()
 {
-    QString filePath = QFileDialog::getExistingDirectory(this, tr("选择日志保存路径...", "./"));
+    QString filePath = QFileDialog::getExistingDirectory(this, tr("Select Log Path...", "./"));
     if (filePath != "\0")
     {
         m_ui->logPathLineEdit->setText(filePath);

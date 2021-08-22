@@ -4,17 +4,17 @@
 <context>
     <name>Console</name>
     <message>
-        <location filename="../app/src/console.cpp" line="39"/>
+        <location filename="../app/src/console.cpp" line="58"/>
         <source>HEX Mode</source>
         <translation type="unfinished">HEX模式</translation>
     </message>
     <message>
-        <location filename="../app/src/console.cpp" line="57"/>
+        <location filename="../app/src/console.cpp" line="76"/>
         <source>Time Stamp</source>
         <translation type="unfinished">显示时间戳</translation>
     </message>
     <message>
-        <location filename="../app/src/console.cpp" line="75"/>
+        <location filename="../app/src/console.cpp" line="94"/>
         <source>Show Send</source>
         <translation type="unfinished">显示发送</translation>
     </message>
@@ -165,50 +165,50 @@
         <translation type="unfinished">选项</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="65"/>
-        <location filename="../app/src/mainwindow.cpp" line="472"/>
+        <location filename="../app/src/mainwindow.cpp" line="67"/>
+        <location filename="../app/src/mainwindow.cpp" line="606"/>
         <source> Disconnected</source>
         <translation type="unfinished"> 断开连接</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="66"/>
-        <location filename="../app/src/mainwindow.cpp" line="419"/>
+        <location filename="../app/src/mainwindow.cpp" line="68"/>
+        <location filename="../app/src/mainwindow.cpp" line="553"/>
         <source> Tx: 0 Bytes</source>
         <translation type="unfinished"> 发送: 0 Bytes</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="67"/>
-        <location filename="../app/src/mainwindow.cpp" line="420"/>
+        <location filename="../app/src/mainwindow.cpp" line="69"/>
+        <location filename="../app/src/mainwindow.cpp" line="554"/>
         <source> Rx: 0 Bytes</source>
         <translation type="unfinished"> 接收: 0 Bytes</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="425"/>
+        <location filename="../app/src/mainwindow.cpp" line="559"/>
         <source>About</source>
         <translation type="unfinished">关于</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="426"/>
+        <location filename="../app/src/mainwindow.cpp" line="560"/>
         <source>&lt;b&gt;Author:&lt;/b&gt; Chet &lt;br&gt;&lt;b&gt;Mail:  &lt;/b&gt; hctlovelife@foxmail.com&lt;br&gt;&lt;br&gt;Welcome to use my serial assistance!</source>
         <translation type="unfinished">&lt;b&gt;作者:&lt;/b&gt; Chet &lt;br&gt;&lt;b&gt;邮箱:  &lt;/b&gt; hctlovelife@foxmail.com&lt;br&gt;&lt;br&gt;欢迎使用串口助手!</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="450"/>
+        <location filename="../app/src/mainwindow.cpp" line="584"/>
         <source> [%1] OPENED: %2, %3bits</source>
         <translation type="unfinished"> [%1] 已连接: %2, %3位</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="456"/>
+        <location filename="../app/src/mainwindow.cpp" line="590"/>
         <source>Error</source>
         <translation type="unfinished">错误</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="457"/>
+        <location filename="../app/src/mainwindow.cpp" line="591"/>
         <source> [%1] Open Error</source>
         <translation type="unfinished"> [%1] 打开失败</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="118"/>
+        <location filename="../app/src/mainwindow.cpp" line="178"/>
         <source> Tx: %1 Bytes</source>
         <translation type="unfinished"> 发送: %1 Bytes</translation>
     </message>
@@ -221,46 +221,46 @@
         <translation type="obsolete">这个 &lt;b&gt;串口助手&lt;/b&gt; 例子演示如何在GUI应用使用Qt串口模块，以及在Qt中使用菜单栏、工具栏和状态栏。</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="134"/>
+        <location filename="../app/src/mainwindow.cpp" line="193"/>
         <source> Rx: %1 Bytes</source>
         <translation type="unfinished"> 接收: %1 Bytes</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="144"/>
+        <location filename="../app/src/mainwindow.cpp" line="201"/>
         <source>Critical Error</source>
         <translation type="unfinished">严重错误</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="354"/>
+        <location filename="../app/src/mainwindow.cpp" line="480"/>
         <source>[RECV] </source>
         <translation type="unfinished">[接收] </translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="354"/>
+        <location filename="../app/src/mainwindow.cpp" line="480"/>
         <source>[SEND] </source>
         <translation type="unfinished">[发送] </translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="382"/>
-        <location filename="../app/src/mainwindow.cpp" line="404"/>
+        <location filename="../app/src/mainwindow.cpp" line="515"/>
+        <location filename="../app/src/mainwindow.cpp" line="538"/>
         <source>Language Setting</source>
         <translation type="unfinished">语言设置</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="383"/>
-        <location filename="../app/src/mainwindow.cpp" line="405"/>
+        <location filename="../app/src/mainwindow.cpp" line="516"/>
+        <location filename="../app/src/mainwindow.cpp" line="539"/>
         <source>The changed will take effect when the program is restarted.</source>
         <translation type="unfinished">语言设置将在程序重启后生效。</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="387"/>
-        <location filename="../app/src/mainwindow.cpp" line="409"/>
+        <location filename="../app/src/mainwindow.cpp" line="520"/>
+        <location filename="../app/src/mainwindow.cpp" line="543"/>
         <source>Warinning</source>
         <translation type="unfinished">警告</translation>
     </message>
     <message>
-        <location filename="../app/src/mainwindow.cpp" line="388"/>
-        <location filename="../app/src/mainwindow.cpp" line="410"/>
+        <location filename="../app/src/mainwindow.cpp" line="521"/>
+        <location filename="../app/src/mainwindow.cpp" line="544"/>
         <source>Invalid operating.</source>
         <translation type="unfinished">无效的操作。</translation>
     </message>
@@ -273,86 +273,111 @@
         <translation type="unfinished">选项</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="83"/>
-        <location filename="../app/src/optionsdialog.cpp" line="56"/>
+        <location filename="../app/src/optionsdialog.cpp" line="243"/>
         <source>Font</source>
         <translation type="unfinished">字体</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="99"/>
+        <location filename="../app/ui/optionsdialog.ui" line="92"/>
+        <source>Display</source>
+        <translation type="unfinished">显示</translation>
+    </message>
+    <message>
+        <location filename="../app/ui/optionsdialog.ui" line="108"/>
         <source>Normal Font: </source>
         <translation type="unfinished">普通字体: </translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="127"/>
+        <location filename="../app/ui/optionsdialog.ui" line="136"/>
         <source>Font..</source>
         <translation type="unfinished">字体设置..</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="159"/>
+        <location filename="../app/ui/optionsdialog.ui" line="168"/>
         <source>Color</source>
         <translation type="unfinished">颜色</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="173"/>
+        <location filename="../app/ui/optionsdialog.ui" line="182"/>
         <source>Text</source>
         <translation type="unfinished">文本</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="186"/>
+        <location filename="../app/ui/optionsdialog.ui" line="195"/>
         <source>Background</source>
         <translation type="unfinished">背景</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="234"/>
+        <location filename="../app/ui/optionsdialog.ui" line="246"/>
         <source>Default</source>
         <translation type="unfinished">默认</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="296"/>
-        <source>Tab 2</source>
-        <translation type="unfinished"></translation>
+        <location filename="../app/ui/optionsdialog.ui" line="308"/>
+        <source>Log</source>
+        <translation type="unfinished">日志</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="41"/>
+        <location filename="../app/ui/optionsdialog.ui" line="320"/>
+        <source> Auto Log</source>
+        <translation type="unfinished"> 自动保存日志</translation>
+    </message>
+    <message>
+        <location filename="../app/ui/optionsdialog.ui" line="337"/>
+        <source>Log Path: </source>
+        <translation type="unfinished">路径: </translation>
+    </message>
+    <message>
+        <location filename="../app/ui/optionsdialog.ui" line="374"/>
+        <source>...</source>
+        <translation type="unfinished">...</translation>
+    </message>
+    <message>
+        <location filename="../app/ui/optionsdialog.ui" line="44"/>
         <source>OK</source>
         <translation type="unfinished">确定</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="54"/>
+        <location filename="../app/ui/optionsdialog.ui" line="60"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="67"/>
+        <location filename="../app/ui/optionsdialog.ui" line="76"/>
         <source>Apply</source>
         <translation type="unfinished">应用</translation>
     </message>
     <message>
-        <location filename="../app/ui/optionsdialog.ui" line="304"/>
-        <source>3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../app/src/optionsdialog.cpp" line="100"/>
+        <location filename="../app/src/optionsdialog.cpp" line="284"/>
         <source>Text Color</source>
         <translation type="unfinished">文本颜色</translation>
     </message>
     <message>
-        <location filename="../app/src/optionsdialog.cpp" line="118"/>
+        <location filename="../app/src/optionsdialog.cpp" line="302"/>
         <source>Background Color</source>
         <translation type="unfinished">背景颜色</translation>
+    </message>
+    <message>
+        <location filename="../app/src/optionsdialog.cpp" line="354"/>
+        <source>Select Log Path...</source>
+        <comment>./</comment>
+        <translation type="unfinished">选择路径...</translation>
+    </message>
+    <message>
+        <source>选择日志保存路径...</source>
+        <comment>./</comment>
+        <translation type="obsolete">Select log Path...</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../app/src/main.cpp" line="20"/>
+        <location filename="../app/src/main.cpp" line="22"/>
         <source>Error</source>
         <translation type="unfinished">错误</translation>
     </message>
     <message>
-        <location filename="../app/src/main.cpp" line="21"/>
+        <location filename="../app/src/main.cpp" line="23"/>
         <source>Load language Failed!</source>
         <translation type="unfinished">加载界面语言失败！</translation>
     </message>
@@ -445,78 +470,78 @@
         <translation type="unfinished">本地回显</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="17"/>
+        <location filename="../app/src/settingsdialog.cpp" line="16"/>
         <source>N/A</source>
         <translation type="unfinished">N/A</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="185"/>
+        <location filename="../app/src/settingsdialog.cpp" line="202"/>
         <source>Description: %1</source>
         <translation type="unfinished">描述: %1</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="186"/>
+        <location filename="../app/src/settingsdialog.cpp" line="203"/>
         <source>Manufacture: %1</source>
         <translation type="unfinished">厂家: %1</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="187"/>
+        <location filename="../app/src/settingsdialog.cpp" line="204"/>
         <source>Serial number: %1</source>
         <translation type="unfinished">串口号: %1</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="188"/>
+        <location filename="../app/src/settingsdialog.cpp" line="205"/>
         <source>Location: %1</source>
         <translation type="unfinished">本地: %1</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="189"/>
+        <location filename="../app/src/settingsdialog.cpp" line="206"/>
         <source>Vendor Identifier: %1</source>
         <translation type="unfinished">供应商ID: %1</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="190"/>
+        <location filename="../app/src/settingsdialog.cpp" line="207"/>
         <source>Product Identifier: %1</source>
         <translation type="unfinished">厂家ID: %1</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="216"/>
+        <location filename="../app/src/settingsdialog.cpp" line="233"/>
         <source>Custom</source>
         <translation type="unfinished">自定义</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="226"/>
-        <location filename="../app/src/settingsdialog.cpp" line="240"/>
+        <location filename="../app/src/settingsdialog.cpp" line="243"/>
+        <location filename="../app/src/settingsdialog.cpp" line="257"/>
         <source>None</source>
         <translation type="unfinished">无</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="227"/>
+        <location filename="../app/src/settingsdialog.cpp" line="244"/>
         <source>Even</source>
         <translation type="unfinished">偶校验</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="228"/>
+        <location filename="../app/src/settingsdialog.cpp" line="245"/>
         <source>Odd</source>
         <translation type="unfinished">奇校验</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="229"/>
+        <location filename="../app/src/settingsdialog.cpp" line="246"/>
         <source>Mark</source>
         <translation type="unfinished">校验为1</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="230"/>
+        <location filename="../app/src/settingsdialog.cpp" line="247"/>
         <source>Space</source>
         <translation type="unfinished">校验为0</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="241"/>
+        <location filename="../app/src/settingsdialog.cpp" line="258"/>
         <source>RTS/CTS</source>
         <translation type="unfinished">RTS/CTS</translation>
     </message>
     <message>
-        <location filename="../app/src/settingsdialog.cpp" line="242"/>
+        <location filename="../app/src/settingsdialog.cpp" line="259"/>
         <source>XON/XOFF</source>
         <translation type="unfinished">XON/XOFF</translation>
     </message>
