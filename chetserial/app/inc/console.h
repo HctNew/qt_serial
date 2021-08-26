@@ -24,18 +24,22 @@ signals:
     void getData(const QByteArray &data);
 
 public slots:
-    void setHexModeChecked(bool   bSet);
-    void setTimeStampChecked(bool bSet);;
-    void setShowSendChecked(bool  bSet);;
+    void setHexModeChecked(bool         bSet);
+    void setTimeStampChecked(bool       bSet);
+    void setShowSendChecked(bool        bSet);
+    void setAutoSendWrapChecked(bool    bSet);
 
 
 public:
-    void setHexModeEnable(bool   bSet);
-    void setTimeStampEnable(bool bSet);
-    void setShowSendEnable(bool  bSet);
-    bool isHexModeChecked(void)   { return m_hexModeSet;   };
-    bool isTimeStampChecked(void) { return m_timeStampSet; };
-    bool isShowSendChecked(void)  { return m_showSend;     };
+    void setHexModeEnable(bool          bSet);
+    void setTimeStampEnable(bool        bSet);
+    void setShowSendEnable(bool         bSet);
+    void setAutoSendWrapEnable(bool     bSet);
+
+    bool isAutoSendWrapChecked(void)    { return m_autoSendWrap; };
+    bool isHexModeChecked(void)         { return m_hexModeSet;   };
+    bool isTimeStampChecked(void)       { return m_timeStampSet; };
+    bool isShowSendChecked(void)        { return m_showSend;     };
 
 protected:
     void contextMenuEvent(QContextMenuEvent *e) override; // 右键菜单
@@ -45,6 +49,8 @@ private:
     QAction *hexMenuItem        = nullptr;
     QAction *timeStampMenuItem  = nullptr;
     QAction *showSendMenuItem   = nullptr;
+    QAction *autoSendWrapItem   = nullptr;
+    bool m_autoSendWrap         = false;
     bool m_hexModeSet           = false;
     bool m_showSend             = false;
     bool m_timeStampSet         = false;

@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent):
     m_ui->sendTextEdit->setEnabled(true);
     m_ui->sendTextEdit->setShowSendEnable(false);
     m_ui->sendTextEdit->setTimeStampEnable(false);
+    m_ui->recvTextEdit->setAutoSendWrapEnable(false);
 
     // 设置活动类控件状态
     m_ui->actionConnect->setEnabled(true);
@@ -152,17 +153,21 @@ void MainWindow::on_sendPushButton_clicked()
 {
     if (!m_serial->isOpen()) return;
 
-    QByteArray byteArrayWrite;
+    QByteArray byteArrayWrite = m_ui->sendTextEdit->toPlainText().toUtf8();
+
+    if (m_ui->sendTextEdit->isAutoSendWrapChecked() &&
+        !m_ui->sendTextEdit->isHexModeChecked() )
+    {
+        byteArrayWrite += QString("\n").toUtf8();
+
+    }
 
     // 判断右键菜单是否选中 “Hex Mode”，十六进制发送
     if (m_ui->sendTextEdit->isHexModeChecked())
     {
-        byteArrayWrite = str2Hex( formatInput(m_ui->sendTextEdit->toPlainText().toUtf8()) );
+        byteArrayWrite = str2Hex( formatInput(byteArrayWrite) );
     }
-    else
-    {
-        byteArrayWrite = m_ui->sendTextEdit->toPlainText().toUtf8();
-    }
+
 
     m_serial->write(byteArrayWrite);
 
@@ -316,6 +321,10 @@ void MainWindow::xmlInitWinCfg(QDomElement &parentElem, QDomDocument & doc)
         elem = doc.createElement("ShowSend");
         elem.setAttribute("Enable", m_ui->recvTextEdit->isShowSendChecked());
         contextElem.appendChild(elem);
+
+        elem = doc.createElement("SendWrap");
+        elem.setAttribute("Enable", m_ui->sendTextEdit->isAutoSendWrapChecked());
+        contextElem.appendChild(elem);
     }
 
 }
@@ -344,6 +353,7 @@ void MainWindow::xmlSaveWinCfg(QDomElement &parentElem)
     nodeList.at(1).toElement().setAttribute("Enable", m_ui->sendTextEdit->isHexModeChecked());
     nodeList.at(2).toElement().setAttribute("Enable", m_ui->recvTextEdit->isTimeStampChecked());
     nodeList.at(3).toElement().setAttribute("Enable", m_ui->recvTextEdit->isShowSendChecked());
+    nodeList.at(4).toElement().setAttribute("Enable", m_ui->sendTextEdit->isAutoSendWrapChecked());
 
 
 }
@@ -366,10 +376,11 @@ void MainWindow::xmlLoadWinCfg(QDomElement &parentElem)
     elem     = nodeList.at(0).toElement();
     nodeList = elem.childNodes();
 
-    m_ui->recvTextEdit->setHexModeChecked(   nodeList.at(0).toElement().attribute("Enable").toInt());
-    m_ui->sendTextEdit->setHexModeChecked(   nodeList.at(1).toElement().attribute("Enable").toInt());
-    m_ui->recvTextEdit->setTimeStampChecked( nodeList.at(2).toElement().attribute("Enable").toInt());
-    m_ui->recvTextEdit->setShowSendChecked(  nodeList.at(3).toElement().attribute("Enable").toInt());
+    m_ui->recvTextEdit->setHexModeChecked(      nodeList.at(0).toElement().attribute("Enable").toInt());
+    m_ui->sendTextEdit->setHexModeChecked(      nodeList.at(1).toElement().attribute("Enable").toInt());
+    m_ui->recvTextEdit->setTimeStampChecked(    nodeList.at(2).toElement().attribute("Enable").toInt());
+    m_ui->recvTextEdit->setShowSendChecked(     nodeList.at(3).toElement().attribute("Enable").toInt());
+    m_ui->sendTextEdit->setAutoSendWrapChecked( nodeList.at(4).toElement().attribute("Enable").toInt());
 
 }
 
@@ -426,7 +437,7 @@ char MainWindow::convertHexChar(char ch)
         return ch-'A'+10;
     else if((ch >= 'a') && (ch <= 'f'))
         return ch-'a'+10;
-    else return (-1);
+    else return (ch);
 }
 
 /**

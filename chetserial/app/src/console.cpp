@@ -7,8 +7,6 @@
 #include <QMessageBox>
 
 
-
-
 Console::Console(QWidget *parent) :
     QTextEdit(parent)
 {
@@ -17,9 +15,12 @@ Console::Console(QWidget *parent) :
 
     //默认的标准右键菜单，如果不需要刻意完全自己实现
     m_menu = createStandardContextMenu();
+
+    // 需要先实例化Action,不然会报错。
     setHexModeEnable(true);
     setTimeStampEnable(true);
     setShowSendEnable(true);
+    setAutoSendWrapEnable(true);
 }
 
 void Console::setHexModeChecked(bool bSet)
@@ -38,6 +39,12 @@ void Console::setShowSendChecked(bool bSet)
 {
     m_showSend = bSet;
     showSendMenuItem->setChecked(bSet);
+}
+
+void Console::setAutoSendWrapChecked(bool bSet)
+{
+    m_autoSendWrap = bSet;
+    autoSendWrapItem->setChecked(bSet);
 }
 
 void Console::showData(const QString &data)
@@ -65,6 +72,7 @@ void Console::setHexModeEnable(bool bSet)
         if (hexMenuItem != nullptr)
         {
             delete hexMenuItem;
+            hexMenuItem = nullptr;
         }
     }
 }
@@ -83,6 +91,7 @@ void Console::setTimeStampEnable(bool bSet)
         if (timeStampMenuItem != nullptr)
         {
             delete timeStampMenuItem;
+            timeStampMenuItem = nullptr;
         }
     }
 }
@@ -101,9 +110,29 @@ void Console::setShowSendEnable(bool bSet)
         if (showSendMenuItem != nullptr)
         {
             delete showSendMenuItem;
+            showSendMenuItem = nullptr;
         }
     }
 
+}
+
+void Console::setAutoSendWrapEnable(bool bSet)
+{
+    if (bSet)
+    {
+        autoSendWrapItem = m_menu->addAction(tr("Send Wrap"));
+        autoSendWrapItem->setChecked(false);
+        autoSendWrapItem->setCheckable(true);
+        connect(autoSendWrapItem, &QAction::triggered, this, &Console::setAutoSendWrapChecked);
+    }
+    else
+    {
+        if (autoSendWrapItem != nullptr)
+        {
+            delete autoSendWrapItem;
+            autoSendWrapItem = nullptr;
+        }
+    }
 }
 
 void Console::contextMenuEvent(QContextMenuEvent *e)

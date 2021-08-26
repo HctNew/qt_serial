@@ -9,6 +9,7 @@
 *.so.*
 *.dll
 *.dylib
+*.obj
 
 # Qt-es
 object_script.*.Release
@@ -31,6 +32,10 @@ Makefile*
 *build-*
 *.qm
 *.prl
+*.pdb
+*.ilk
+*.res
+
 
 # Qt unit tests
 target_wrapper.*

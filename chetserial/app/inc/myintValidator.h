@@ -31,7 +31,7 @@ public:
 
     void fixup(QString &s) const
     {
-        s = QString("%1").arg(top());
+            s = QString("%1").arg(top());
     }
 };
 

@@ -22,12 +22,13 @@
     <mainwindow>
         <language>English</language>
         <winCfg>
-            <winPosition y="340" height="399" x="652" width="615"/>
+            <winPosition height="399" width="615" x="652" y="340"/>
             <contextMenu>
-                <HEX Enable="0" RW="R"/>
-                <HEX Enable="0" RW="W"/>
+                <HEX RW="R" Enable="0"/>
+                <HEX RW="W" Enable="0"/>
                 <TimeStamp Enable="0"/>
                 <ShowSend Enable="0"/>
+                <SendWrap Enable="0"/>
             </contextMenu>
         </winCfg>
     </mainwindow>

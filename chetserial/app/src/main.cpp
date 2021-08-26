@@ -9,6 +9,8 @@
 #include <QStyleFactory>
 #include "xmlhelper.h"
 
+
+
 static bool loadLanguage(QObject *parent);
 
 int main(int argc, char *argv[])

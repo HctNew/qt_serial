@@ -1,4 +1,3 @@
-
 #include "xmlhelper.h"
 
 #include <QDomDocument>
