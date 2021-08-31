@@ -8,5 +8,9 @@
         <file>images/context_check.ico</file>
         <file>language/en_CN.qm</file>
         <file>language/zh_CN.qm</file>
+        <file>images/add.ico</file>
+        <file>images/down.ico</file>
+        <file>images/sub.ico</file>
+        <file>images/up.ico</file>
     </qresource>
 </RCC>

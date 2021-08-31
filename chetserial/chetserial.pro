@@ -27,6 +27,7 @@ INCLUDEPATH += \
 
 SOURCES += \
     app/src/console.cpp \
+    app/src/customtablewidget.cpp \
     app/src/main.cpp \
     app/src/mainwindow.cpp \
     app/src/optionsdialog.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
 
 HEADERS += \
     app/inc/console.h \
+    app/inc/customtablewidget.h \
     app/inc/mainwindow.h \
     app/inc/myintValidator.h \
     app/inc/optionsdialog.h \

@@ -46,13 +46,13 @@ void OptionsDialog::updateOptions()
                     ", " + QString::number(m_currentOptions.m_font.pointSize()) + "pt";
     m_ui->fontLineEdit->setText(str);
 
-    str = "background-color: rgb(%1, %2, %3);";
+    str = "QToolButton{background-color: rgb(%1, %2, %3);}";
     m_ui->textColorToolButton->setStyleSheet(str.arg(m_currentOptions.m_textColor.red()).
                                              arg(m_currentOptions.m_textColor.green()).
                                              arg(m_currentOptions.m_textColor.blue())
                                              );
 
-    str = "background-color: rgb(%1, %2, %3);";
+    str = "QToolButton{background-color: rgb(%1, %2, %3);}";
     m_ui->bgColorToolButton->setStyleSheet(str.arg(m_currentOptions.m_backgroundColor.red()).
                                              arg(m_currentOptions.m_backgroundColor.green()).
                                              arg(m_currentOptions.m_backgroundColor.blue())

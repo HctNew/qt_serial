@@ -4,6 +4,7 @@
 #include "settingsdialog.h"
 #include "xmlhelper.h"
 #include "logger.h"
+#include "customtablewidget.h"
 
 #include <QDesktopWidget>
 #include <QLabel>
@@ -33,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent):
 
     m_ui->setupUi(this);
 
+    m_ui->tableWidget->xmlInitCmdList(XML_FILE);
+    m_ui->tableWidget->xmlLoadCmdList(XML_FILE);
     m_settings->xmlInitSerialSettings(XML_FILE);
     m_settings->xmlLoadSerialSettings(XML_FILE);
     m_options->xmlInitOptions(XML_FILE);
@@ -46,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent):
     m_ui->sendTextEdit->setShowSendEnable(false);
     m_ui->sendTextEdit->setTimeStampEnable(false);
     m_ui->recvTextEdit->setAutoSendWrapEnable(false);
+    m_ui->recvTextEdit->setStyleSheet("QTextEdit{border:2px solid gray;}");
+    m_ui->sendTextEdit->setStyleSheet("QTextEdit{border:2px solid gray;}");
 
     // 设置活动类控件状态
     m_ui->actionConnect->setEnabled(true);
@@ -76,11 +81,19 @@ MainWindow::MainWindow(QWidget *parent):
     m_serialInfoStatus->setFrameShape(QFrame::Panel);    // 设置标签形状
     m_serialInfoStatus->setFrameShadow(QFrame::Sunken);  // 设置标签阴影
 
+    // 初始化tableWidget
+    m_ui->editPushButton->setText("Edit");
+    m_ui->tableWidget->setEditEnable(false);
+    m_ui->addToolButton->setVisible(false);
+    m_ui->subToolButton->setVisible(false);
+    m_ui->horizontalLayout_3->setAlignment(Qt::AlignRight);
+
     //初始化菜单栏活动类控件以及串口的信号槽
-    connect(m_ui->actionQuit,       &QAction::triggered,            this,       &MainWindow::close);
-    connect(m_ui->actionAboutQt,    &QAction::triggered,            qApp,       &QApplication::aboutQt);
-    connect(m_serial,               &QSerialPort::errorOccurred,    this,       &MainWindow::handleError);
-    connect(m_serial,               &QSerialPort::readyRead,        this,       &MainWindow::readData);
+    connect(m_ui->actionQuit,       &QAction::triggered,                this,   &MainWindow::close);
+    connect(m_ui->actionAboutQt,    &QAction::triggered,                qApp,   &QApplication::aboutQt);
+    connect(m_serial,               &QSerialPort::errorOccurred,        this,   &MainWindow::handleError);
+    connect(m_serial,               &QSerialPort::readyRead,            this,   &MainWindow::readData);
+    connect(m_ui->tableWidget,      &CustomTableWidget::commandClicked, this,   &MainWindow::tableWidgetButtonClicked);
 
     updateOptions(m_options->options());
 }
@@ -222,7 +235,7 @@ void MainWindow::updateOptions(OptionsDialog::Options options)
     pe.setColor(QPalette::Text, options.m_textColor);       // 字体颜色
     pe.setColor(QPalette::Base, options.m_backgroundColor); // lineEdit背景色
     m_ui->recvTextEdit->setPalette(pe);
-    m_ui->sendTextEdit->setPalette(pe);
+    //m_ui->sendTextEdit->setPalette(pe);
 
 }
 
@@ -389,6 +402,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     Q_UNUSED(event);
 
     xmlSaveMainWindow(XML_FILE);
+    m_ui->tableWidget->xmlSaveCmdList(XML_FILE);
 
     qApp->quit();
 }
@@ -624,3 +638,81 @@ void MainWindow::on_actionConfigure_triggered()
         m_settings->xmlSaveSerialSettings(XML_FILE);
     }
 }
+
+
+void MainWindow::on_addToolButton_clicked()
+{
+    CustomTableWidget::CmdStruct cmdData;
+    cmdData.m_id = m_ui->tableWidget->currentRow()+1;
+    m_ui->tableWidget->addItemRow(cmdData);
+}
+
+void MainWindow::on_subToolButton_clicked()
+{
+    m_ui->tableWidget->removeItemRow(m_ui->tableWidget->currentRow());
+}
+
+void MainWindow::on_upToolButton_clicked()
+{
+    int row = m_ui->tableWidget->currentRow();
+    m_ui->tableWidget->moveItemRow(row, row-1);
+}
+
+void MainWindow::on_downToolButton_clicked()
+{
+    int row = m_ui->tableWidget->currentRow();
+    m_ui->tableWidget->moveItemRow(row, row+1);
+}
+
+void MainWindow::on_editPushButton_clicked()
+{
+    if (m_ui->editPushButton->text() == QStringLiteral("Edit"))
+    {
+        m_ui->editPushButton->setText("Save");
+        m_ui->tableWidget->setEditEnable(true);
+        m_ui->addToolButton->setVisible(true);
+        m_ui->subToolButton->setVisible(true);
+    }
+    else
+    {
+        m_ui->editPushButton->setText("Edit");
+        m_ui->tableWidget->setEditEnable(false);
+        m_ui->addToolButton->setVisible(false);
+        m_ui->subToolButton->setVisible(false);
+    }
+}
+
+void MainWindow::tableWidgetButtonClicked(bool isHexChecked, bool isWrapChecked, const QString &data)
+{
+    if (!m_serial->isOpen()) return;
+
+    QByteArray byteArrayWrite = data.toUtf8();
+
+    if (isWrapChecked && !isHexChecked )
+    {
+        byteArrayWrite += QString("\r\n").toUtf8();
+
+    }
+
+    // 判断右键菜单是否选中 “Hex Mode”，十六进制发送
+    if (isHexChecked)
+    {
+        byteArrayWrite = str2Hex( formatInput(byteArrayWrite) );
+    }
+
+
+    m_serial->write(byteArrayWrite);
+
+    // 判断右键菜单是否选中 “Show Send”，显示发送
+    if (m_ui->recvTextEdit->isShowSendChecked())
+    {
+        // 将发送的数据显示在接受区
+        showReadOrWriteData(byteArrayWrite, ShowWriteData);
+    }
+
+    // 更新状态栏：Tx:
+    m_txCount += byteArrayWrite.length();
+    showStatusMessage(m_txBytesStatus, tr(" Tx: %1 Bytes").arg(m_txCount));
+}
+
+

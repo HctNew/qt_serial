@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root>
     <serialParam>
-        <BaudRate index="0">9600</BaudRate>
+        <BaudRate index="3">115200</BaudRate>
         <DataBits index="3">8</DataBits>
         <Parity index="0">None</Parity>
         <StopBits index="0">1</StopBits>
@@ -16,13 +16,13 @@
             </Color>
         </Display>
         <Log Enable="0">
-            <Path>F:/QT/qt_serial/Debug/log</Path>
+            <Path>F:/QT/qt_serial/Release/log</Path>
         </Log>
     </options>
     <mainwindow>
         <language>English</language>
         <winCfg>
-            <winPosition height="399" width="615" x="652" y="340"/>
+            <winPosition y="246" x="998" height="472" width="697"/>
             <contextMenu>
                 <HEX RW="R" Enable="0"/>
                 <HEX RW="W" Enable="0"/>
@@ -32,4 +32,20 @@
             </contextMenu>
         </winCfg>
     </mainwindow>
+    <cmdlist>
+        <CMD id="0">
+            <HEX>0</HEX>
+            <WRAP>1</WRAP>
+            <RowHeight>22</RowHeight>
+            <DESC str="hello"/>
+            <CONT str="hello"/>
+        </CMD>
+        <CMD id="1">
+            <HEX>1</HEX>
+            <WRAP>1</WRAP>
+            <RowHeight>22</RowHeight>
+            <DESC str="debug"/>
+            <CONT str="12345"/>
+        </CMD>
+    </cmdlist>
 </root>

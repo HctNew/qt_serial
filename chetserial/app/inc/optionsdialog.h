@@ -36,8 +36,8 @@ public:
     ~OptionsDialog();
 
     Options options() const { return m_currentOptions; };
-    bool isRecordLog() { return m_currentOptions.m_isAutoSaveLog; };
-    QString logFilePath() { return  m_currentOptions.m_logFilePath; };
+    bool isRecordLog()      { return m_currentOptions.m_isAutoSaveLog; };
+    QString logFilePath()   { return  m_currentOptions.m_logFilePath; };
 
     bool xmlInitOptions(const QString xmlFile);
     bool xmlSaveOptions(const QString xmlFile);

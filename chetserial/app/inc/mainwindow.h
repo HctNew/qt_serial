@@ -17,6 +17,7 @@ class QLabel;
 class QString;
 class QDomDocument;
 class QRect;
+class QTableWidgetItem;
 
 namespace Ui {
 class MainWindow;
@@ -71,6 +72,18 @@ private slots:
 
     void on_actionConfigure_triggered();
 
+    void on_addToolButton_clicked();
+
+    void on_subToolButton_clicked();
+
+    void on_upToolButton_clicked();
+
+    void on_downToolButton_clicked();
+
+    void on_editPushButton_clicked();
+
+    void tableWidgetButtonClicked(bool isHexChecked,
+                                  bool isWrapChecked, const QString &data);
 
 
 private:
