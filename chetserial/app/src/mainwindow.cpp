@@ -15,8 +15,6 @@
 #include <QTextStream>
 #include <QDir>
 
-
-
 /**
  * @brief MainWindow::MainWindow
  * @param parent
@@ -171,7 +169,7 @@ void MainWindow::on_sendPushButton_clicked()
     if (m_ui->sendTextEdit->isAutoSendWrapChecked() &&
         !m_ui->sendTextEdit->isHexModeChecked() )
     {
-        byteArrayWrite += QString("\n").toUtf8();
+        byteArrayWrite += QString("\r\n").toUtf8();
 
     }
 
@@ -461,18 +459,37 @@ char MainWindow::convertHexChar(char ch)
  */
 QString MainWindow::formatInput(const QString& hexStr)
 {
-    int strlen = hexStr.length();
-    QString tmp = hexStr;
+//    int strlen = hexStr.length();
+//    QString tmp = hexStr;
 
-    //将输入格式化，补满两位：0XFF
-    if (strlen%2 != 0)
+//    //将输入格式化，补满两位：0XFF
+//    if (strlen%2 != 0)
+//    {
+//        QString startStr = hexStr.left(strlen-1);
+//        QString endStr = hexStr.right(1);
+//        tmp = startStr + "0" + endStr;
+//    }
+
+//    return tmp;
+
+    QRegExp rx("([a-fA-F0-9]{2})([\\s][a-fA-F0-9]{2})*[\\s]?"); //正则表达式
+    QRegularExpression re;
+
+    bool match = rx.exactMatch(hexStr);//验证文本
+    if(match == true)
     {
-        QString startStr = hexStr.left(strlen-1);
-        QString endStr = hexStr.right(1);
-        tmp = startStr + "0" + endStr;
+        //表达式正确
+        return hexStr;
+    }
+    else
+    {
+        QMessageBox::warning(this, tr("Format Error"), tr("<b>Hexformat:</b> [xx xx xx]<br>"
+                                                          "<b>Example:</b> [0x12 0x4 0x56]<br>"
+                                                          "<b>Input:  </b>12 04 56"));
+        return QString("");
     }
 
-    return tmp;
+
 }
 
 void MainWindow::showReadOrWriteData(const QByteArray &data, uint8_t rdSelect)

@@ -5,6 +5,7 @@
 #include <QAction>
 #include <QContextMenuEvent>
 #include <QMessageBox>
+#include <QValidator>
 
 
 Console::Console(QWidget *parent) :

@@ -42,7 +42,7 @@ public:
 public:
     CustomTableWidget(QWidget *parent=nullptr);
 
-    void addItemRow(const CmdStruct & cmdData);
+    void addItemRow(CmdStruct & cmdData);
 
     void removeItemRow( int  itemRow);
     void moveItemRow(   int  fromRow, int toRow);
@@ -73,6 +73,7 @@ signals:
 
  private slots:
     void itemChangedSlot(QTableWidgetItem *selectItem);
+    void itemCheckClicked(void);
     void itemButtonClicked(void);
 
 

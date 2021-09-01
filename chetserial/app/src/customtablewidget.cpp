@@ -19,6 +19,7 @@
 #include <QHeaderView>
 #include <QSizePolicy>
 #include <QWidget>
+#include <QToolTip>
 #include <QDomDocument>
 
 #define XML_NODE_CMDLIST    ("cmdlist")
@@ -54,7 +55,7 @@ CustomTableWidget::CustomTableWidget(QWidget *parent)
 
     setColumnCount(headerText.count());
     setColumnWidth(HEX_COLUMN,  30);
-    setColumnWidth(WRAP_COLUMN, 30);
+    setColumnWidth(WRAP_COLUMN, 31);
     setColumnWidth(CMD_COLUMN,  60);
     setColumnWidth(DESC_COLUMN, 80);
     setColumnWidth(CONT_COLUMN, 100);
@@ -63,7 +64,7 @@ CustomTableWidget::CustomTableWidget(QWidget *parent)
     connect(this, &QTableWidget::itemChanged, this, &CustomTableWidget::itemChangedSlot);
 }
 
-void CustomTableWidget::addItemRow(const CmdStruct & cmdData)
+void CustomTableWidget::addItemRow(CmdStruct & cmdData)
 {
     insertRow(cmdData.m_id);
     setRowHeight(cmdData.m_id, cmdData.m_rowHeight);
@@ -80,6 +81,7 @@ void CustomTableWidget::addItemRow(const CmdStruct & cmdData)
         widget->setLayout(hLayout);
 
         setCellWidget(cmdData.m_id, HEX_COLUMN, widget);
+        connect(chkBox, SIGNAL(clicked()), this, SLOT(itemCheckClicked()));
     }
 
     {
@@ -87,6 +89,13 @@ void CustomTableWidget::addItemRow(const CmdStruct & cmdData)
         QCheckBox   *chkBox  = new QCheckBox(widget);
         QHBoxLayout *hLayout = new QHBoxLayout(widget); //实例化水平布局
 
+
+
+        if (cmdData.m_isHexChecked)
+        {
+            cmdData.m_isWrapChecked = false;
+            chkBox->setEnabled(false);
+        }
         chkBox->setChecked(cmdData.m_isWrapChecked);
         hLayout->addWidget(chkBox); //  添加checkbox
         hLayout->setMargin(0);      // 设置布局里控件离边缘的间隙
@@ -111,8 +120,11 @@ void CustomTableWidget::addItemRow(const CmdStruct & cmdData)
         setCellWidget(cmdData.m_id, CMD_COLUMN, pWidget);
     }
 
+
+
     setItem(cmdData.m_id, DESC_COLUMN, new QTableWidgetItem(cmdData.m_desc));
     setItem(cmdData.m_id, CONT_COLUMN, new QTableWidgetItem(cmdData.m_content));
+    item(cmdData.m_id, CONT_COLUMN)->setToolTip("Hex format:[xx xx xx]");
 
     if (cmdData.m_id >= 0)
     {
@@ -421,6 +433,26 @@ void CustomTableWidget::itemChangedSlot(QTableWidgetItem *selectItem)
     QString     itemText = item(selectItem->row(), selectItem->column())->text();
 
     pushBtn->setText(itemText);
+}
+
+void CustomTableWidget::itemCheckClicked(void)
+{
+    QCheckBox   *chkBox     = qobject_cast<QCheckBox*>(sender());
+    QWidget     *w_parent   = (QWidget*)chkBox->parent();
+
+    QModelIndex index = indexAt(w_parent->mapToParent(chkBox->pos()));
+    int row = index.row();
+
+    // 找出Wrap checkbox
+    QWidget *pWidget = cellWidget(row, WRAP_COLUMN);
+    QList<QCheckBox *> allCheckBoxs =  pWidget->findChildren<QCheckBox *>();
+
+    allCheckBoxs.first()->setChecked(false);
+    if(allCheckBoxs.size() > 0)
+    {
+        allCheckBoxs.first()->setEnabled(!chkBox->isChecked());
+    }
+
 }
 
 void CustomTableWidget::itemButtonClicked()
