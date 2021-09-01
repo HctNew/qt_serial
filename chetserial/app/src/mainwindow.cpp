@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent):
     m_serialInfoStatus->setFrameShadow(QFrame::Sunken);  // 设置标签阴影
 
     // 初始化tableWidget
-    m_ui->editPushButton->setText("Edit");
+    m_ui->editPushButton->setText(tr("Edit"));
     m_ui->tableWidget->setEditEnable(false);
     m_ui->addToolButton->setVisible(false);
     m_ui->subToolButton->setVisible(false);
@@ -683,16 +683,16 @@ void MainWindow::on_downToolButton_clicked()
 
 void MainWindow::on_editPushButton_clicked()
 {
-    if (m_ui->editPushButton->text() == QStringLiteral("Edit"))
+    if (m_ui->editPushButton->text() == tr("Edit"))
     {
-        m_ui->editPushButton->setText("Save");
+        m_ui->editPushButton->setText(tr("Save"));
         m_ui->tableWidget->setEditEnable(true);
         m_ui->addToolButton->setVisible(true);
         m_ui->subToolButton->setVisible(true);
     }
     else
     {
-        m_ui->editPushButton->setText("Edit");
+        m_ui->editPushButton->setText(tr("Edit"));
         m_ui->tableWidget->setEditEnable(false);
         m_ui->addToolButton->setVisible(false);
         m_ui->subToolButton->setVisible(false);

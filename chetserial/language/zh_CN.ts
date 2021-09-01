@@ -66,6 +66,8 @@
     </message>
     <message>
         <location filename="../app/ui/mainwindow.ui" line="267"/>
+        <location filename="../app/src/mainwindow.cpp" line="686"/>
+        <location filename="../app/src/mainwindow.cpp" line="695"/>
         <source>Edit</source>
         <translation type="unfinished">编辑</translation>
     </message>
@@ -316,6 +318,11 @@
         <location filename="../app/src/mainwindow.cpp" line="586"/>
         <source>Invalid operating.</source>
         <translation type="unfinished">无效的操作。</translation>
+    </message>
+    <message>
+        <location filename="../app/src/mainwindow.cpp" line="688"/>
+        <source>Save</source>
+        <translation type="unfinished">保存</translation>
     </message>
 </context>
 <context>

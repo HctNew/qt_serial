@@ -8,6 +8,27 @@
             <DESC str="hex"/>
             <CONT str="12 34 56"/>
         </CMD>
+        <CMD id="1">
+            <HEX>0</HEX>
+            <WRAP>0</WRAP>
+            <RowHeight>22</RowHeight>
+            <DESC str=""/>
+            <CONT str=""/>
+        </CMD>
+        <CMD id="2">
+            <HEX>0</HEX>
+            <WRAP>0</WRAP>
+            <RowHeight>22</RowHeight>
+            <DESC str=""/>
+            <CONT str=""/>
+        </CMD>
+        <CMD id="3">
+            <HEX>0</HEX>
+            <WRAP>0</WRAP>
+            <RowHeight>22</RowHeight>
+            <DESC str=""/>
+            <CONT str=""/>
+        </CMD>
     </cmdlist>
     <serialParam>
         <BaudRate index="0">9600</BaudRate>
@@ -31,7 +52,7 @@
     <mainwindow>
         <language>Chinese</language>
         <winCfg>
-            <winPosition height="473" y="234" width="697" x="1093"/>
+            <winPosition height="473" width="697" x="168" y="174"/>
             <contextMenu>
                 <HEX RW="R" Enable="0"/>
                 <HEX RW="W" Enable="0"/>
