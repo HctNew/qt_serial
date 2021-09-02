@@ -179,6 +179,27 @@ void OptionsDialog::xmlLoadLogPath(const QDomElement &parentElem)
     m_currentOptions.m_logFilePath = node.firstChild().nodeValue();
 }
 
+bool OptionsDialog::getDialogColor(QColor &dialogColor)
+{
+    QColorDialog myColorDialog(dialogColor, this);
+
+    //设置option，防止linux报警告
+    myColorDialog.setOption(QColorDialog::DontUseNativeDialog);
+
+
+    if( myColorDialog.exec() == QDialog::Accepted )
+    {
+        //获取当前选中的颜色
+        dialogColor = myColorDialog.currentColor();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+}
+
 bool OptionsDialog::xmlInitOptions(const QString xmlFile)
 {
     QDomDocument doc;
@@ -280,36 +301,29 @@ void OptionsDialog::on_applyButton_clicked()
 
 void OptionsDialog::on_textColorToolButton_clicked()
 {
-    QColor color = QColorDialog::getColor(m_currentOptions.m_textColor, this,
-                                          tr("Text Color"), QColorDialog::ShowAlphaChannel);
-    if (color != QColor::Invalid)
+
+    if( true == getDialogColor(m_uncertainOptions.m_textColor) )
     {
-        QString str = "background-color: rgb(%1, %2, %3);";
-        m_ui->textColorToolButton->setStyleSheet(str.arg(color.red()).
-                                                 arg(color.green()).
-                                                 arg(color.blue())
+        QString str = "QToolButton{background-color: rgb(%1, %2, %3);}";
+        m_ui->textColorToolButton->setStyleSheet(str.arg(m_uncertainOptions.m_textColor.red()).
+                                                 arg(m_uncertainOptions.m_textColor.green()).
+                                                 arg(m_uncertainOptions.m_textColor.blue())
                                                  );
-
-        m_uncertainOptions.m_textColor = color;
     }
-
 
 }
 
 void OptionsDialog::on_bgColorToolButton_clicked()
 {
-    QColor color = QColorDialog::getColor(m_currentOptions.m_backgroundColor, nullptr,
-                                          tr("Background Color"), QColorDialog::ShowAlphaChannel);
-    if (color != QColor::Invalid)
+    if( true == getDialogColor(m_uncertainOptions.m_backgroundColor) )
     {
-        QString str = "background-color: rgb(%1, %2, %3);";
-        m_ui->bgColorToolButton->setStyleSheet(str.arg(color.red()).
-                                                 arg(color.green()).
-                                                 arg(color.blue())
+        QString str = "QToolButton{background-color: rgb(%1, %2, %3);}";
+        m_ui->bgColorToolButton->setStyleSheet(str.arg(m_uncertainOptions.m_backgroundColor.red()).
+                                                 arg(m_uncertainOptions.m_backgroundColor.green()).
+                                                 arg(m_uncertainOptions.m_backgroundColor.blue())
                                                  );
-
-        m_uncertainOptions.m_backgroundColor = color;
     }
+
 }
 
 void OptionsDialog::on_defaultColorButton_clicked()
@@ -317,13 +331,13 @@ void OptionsDialog::on_defaultColorButton_clicked()
     m_uncertainOptions.m_textColor.setRgb(0, 0, 0);
     m_uncertainOptions.m_backgroundColor.setRgb(255, 255, 255);
 
-    QString str = "background-color: rgb(%1, %2, %3);";
+    QString str = "QToolButton{background-color: rgb(%1, %2, %3);}";
     m_ui->textColorToolButton->setStyleSheet(str.arg(m_uncertainOptions.m_textColor.red()).
                                              arg(m_uncertainOptions.m_textColor.green()).
                                              arg(m_uncertainOptions.m_textColor.blue())
                                              );
 
-    str = "background-color: rgb(%1, %2, %3);";
+    str = "QToolButton{background-color: rgb(%1, %2, %3);}";
     m_ui->bgColorToolButton->setStyleSheet(str.arg(m_uncertainOptions.m_backgroundColor.red()).
                                              arg(m_uncertainOptions.m_backgroundColor.green()).
                                              arg(m_uncertainOptions.m_backgroundColor.blue())

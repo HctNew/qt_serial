@@ -5,29 +5,8 @@
             <HEX>0</HEX>
             <WRAP>0</WRAP>
             <RowHeight>22</RowHeight>
-            <DESC str="hex"/>
-            <CONT str="12 34 56"/>
-        </CMD>
-        <CMD id="1">
-            <HEX>0</HEX>
-            <WRAP>0</WRAP>
-            <RowHeight>22</RowHeight>
-            <DESC str=""/>
-            <CONT str=""/>
-        </CMD>
-        <CMD id="2">
-            <HEX>0</HEX>
-            <WRAP>0</WRAP>
-            <RowHeight>22</RowHeight>
-            <DESC str=""/>
-            <CONT str=""/>
-        </CMD>
-        <CMD id="3">
-            <HEX>0</HEX>
-            <WRAP>0</WRAP>
-            <RowHeight>22</RowHeight>
-            <DESC str=""/>
-            <CONT str=""/>
+            <DESC str="test"/>
+            <CONT str="test"/>
         </CMD>
     </cmdlist>
     <serialParam>
@@ -41,8 +20,8 @@
         <Display>
             <FontStyle string="微软雅黑,9,-1,5,50,0,0,0,0,0,Regular"/>
             <Color>
-                <text rgb="ff000000"/>
-                <background rgb="ffffffff"/>
+                <text rgb="ffaa5500"/>
+                <background rgb="ff000000"/>
             </Color>
         </Display>
         <Log Enable="0">
@@ -50,15 +29,15 @@
         </Log>
     </options>
     <mainwindow>
-        <language>Chinese</language>
+        <language>English</language>
         <winCfg>
-            <winPosition height="473" width="697" x="168" y="174"/>
+            <winPosition height="473" width="697" x="831" y="352"/>
             <contextMenu>
                 <HEX RW="R" Enable="0"/>
                 <HEX RW="W" Enable="0"/>
                 <TimeStamp Enable="0"/>
                 <ShowSend Enable="1"/>
-                <SendWrap Enable="1"/>
+                <SendWrap Enable="0"/>
             </contextMenu>
         </winCfg>
     </mainwindow>

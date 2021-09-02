@@ -228,12 +228,15 @@ void MainWindow::updateOptions(OptionsDialog::Options options)
     m_ui->recvTextEdit->setFont(options.m_font);
     m_ui->sendTextEdit->setFont(options.m_font);
 
+    QString str = "Console{background-color: rgb(%1, %2, %3);border:2px solid gray;}";
+    m_ui->recvTextEdit->setStyleSheet(str.arg(options.m_backgroundColor.red()).
+                                          arg(options.m_backgroundColor.green()).
+                                          arg(options.m_backgroundColor.blue()));
+
     // 需要使用QPalette来配置，不能使用setTextColor，因为setTextColor没有使lineEdit配置前输入的内容字体颜色生效。
     QPalette pe = m_ui->recvTextEdit->palette();
     pe.setColor(QPalette::Text, options.m_textColor);       // 字体颜色
-    pe.setColor(QPalette::Base, options.m_backgroundColor); // lineEdit背景色
     m_ui->recvTextEdit->setPalette(pe);
-    //m_ui->sendTextEdit->setPalette(pe);
 
 }
 
@@ -459,19 +462,6 @@ char MainWindow::convertHexChar(char ch)
  */
 QString MainWindow::formatInput(const QString& hexStr)
 {
-//    int strlen = hexStr.length();
-//    QString tmp = hexStr;
-
-//    //将输入格式化，补满两位：0XFF
-//    if (strlen%2 != 0)
-//    {
-//        QString startStr = hexStr.left(strlen-1);
-//        QString endStr = hexStr.right(1);
-//        tmp = startStr + "0" + endStr;
-//    }
-
-//    return tmp;
-
     QRegExp rx("([a-fA-F0-9]{2})([\\s][a-fA-F0-9]{2})*[\\s]?"); //正则表达式
     QRegularExpression re;
 

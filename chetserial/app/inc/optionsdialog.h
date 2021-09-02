@@ -53,6 +53,8 @@ private:
     void xmlSaveLogPath(QDomElement &parentElem);
     void xmlLoadLogPath(const QDomElement &parentElem);
 
+    bool getDialogColor(QColor &dialogColor);
+
 private slots:
 
     void on_fontConfigButton_clicked();
