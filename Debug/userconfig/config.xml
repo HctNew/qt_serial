@@ -31,10 +31,10 @@
     <mainwindow>
         <language>English</language>
         <winCfg>
-            <winPosition height="473" width="697" x="831" y="352"/>
+            <winPosition y="352" width="697" x="831" height="473"/>
             <contextMenu>
-                <HEX RW="R" Enable="0"/>
-                <HEX RW="W" Enable="0"/>
+                <HEX Enable="0" RW="R"/>
+                <HEX Enable="0" RW="W"/>
                 <TimeStamp Enable="0"/>
                 <ShowSend Enable="1"/>
                 <SendWrap Enable="0"/>

@@ -35,6 +35,8 @@ Makefile*
 *.pdb
 *.ilk
 *.res
+*.exe
+*.xml
 
 
 # Qt unit tests

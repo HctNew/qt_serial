@@ -186,6 +186,9 @@ bool OptionsDialog::getDialogColor(QColor &dialogColor)
     //设置option，防止linux报警告
     myColorDialog.setOption(QColorDialog::DontUseNativeDialog);
 
+    // 指定窗体的位置和预设大小，防止出现警告。
+    myColorDialog.setGeometry(this->x()+200,this->y()+160,300,280);
+
 
     if( myColorDialog.exec() == QDialog::Accepted )
     {
