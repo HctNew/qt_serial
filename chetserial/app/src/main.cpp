@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include <QApplication>
 
 #include <QDebug>
@@ -8,7 +8,6 @@
 #include <QMessageBox>
 #include <QStyleFactory>
 #include "xmlhelper.h"
-
 
 
 static bool loadLanguage(QObject *parent);

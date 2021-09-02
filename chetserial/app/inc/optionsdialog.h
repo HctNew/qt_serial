@@ -1,4 +1,4 @@
-#ifndef OPTIONSDIALOG_H
+﻿#ifndef OPTIONSDIALOG_H
 #define OPTIONSDIALOG_H
 
 #include <QDialog>
@@ -56,7 +56,6 @@ private:
     bool getDialogColor(QColor &dialogColor);
 
 private slots:
-
     void on_fontConfigButton_clicked();
 
     void on_applyButton_clicked();

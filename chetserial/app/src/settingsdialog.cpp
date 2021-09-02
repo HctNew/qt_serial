@@ -1,4 +1,4 @@
-#include "settingsdialog.h"
+﻿#include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 #include "myintValidator.h"
 #include "xmlhelper.h"
@@ -10,7 +10,6 @@
 #include <QDomDocument>
 #include <QTextStream>
 #include <QDir>
-
 
 
 static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");

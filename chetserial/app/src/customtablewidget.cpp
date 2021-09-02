@@ -1,4 +1,4 @@
-#include "customtablewidget.h"
+﻿#include "customtablewidget.h"
 #include "xmlhelper.h"
 
 #include <QObject>
@@ -47,7 +47,6 @@ CustomTableWidget::CustomTableWidget(QWidget *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     setEditTriggers(QAbstractItemView::DoubleClicked);  // 设置为双击输入，防止单击输入导致系统崩溃
-
 
     // 添加行表头
     QStringList headerText;

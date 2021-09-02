@@ -1,4 +1,4 @@
-#ifndef MYINTVALIDATOR_H
+﻿#ifndef MYINTVALIDATOR_H
 #define MYINTVALIDATOR_H
 
 #include <QIntValidator>
@@ -36,3 +36,4 @@ public:
 };
 
 #endif // MYINTVALIDATOR_H
+

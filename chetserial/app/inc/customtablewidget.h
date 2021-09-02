@@ -1,4 +1,4 @@
-#ifndef CUSTOMTABLEWIDGET_H
+﻿#ifndef CUSTOMTABLEWIDGET_H
 #define CUSTOMTABLEWIDGET_H
 
 #include <QObject>
@@ -55,7 +55,6 @@ public:
     bool xmlLoadCmdList(const QString &xmlFile);
 
 private:
-
     void addCmdToXml(QDomDocument doc, QDomElement parentElem, const CmdStruct & cmdData);
     void removeCmdFromXml(QDomElement parentElem, int id)
     {

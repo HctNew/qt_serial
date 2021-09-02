@@ -1,4 +1,4 @@
-#include "console.h"
+﻿#include "console.h"
 
 #include <QScrollBar>
 #include <QMenu>
@@ -6,7 +6,6 @@
 #include <QContextMenuEvent>
 #include <QMessageBox>
 #include <QValidator>
-
 
 Console::Console(QWidget *parent) :
     QTextEdit(parent)

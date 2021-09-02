@@ -1,9 +1,10 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QSerialPort>
 #include <QDebug>
+#include <QLabel>
 #include "optionsdialog.h"
 
 #define XML_NODE_MAINWINDOW     ("mainwindow")
@@ -13,7 +14,6 @@
 // 使用QT命令空间
 QT_BEGIN_NAMESPACE
 
-class QLabel;
 class QString;
 class QDomDocument;
 class QRect;
@@ -99,7 +99,15 @@ private:
     QString formatInput(const QString& hexStr);
 
     void showStatusMessage(QLabel *label, const QString &message,
-                           const QColor &acolor = Qt::black);
+                           const QColor &acolor = Qt::black)
+    {
+        QPalette pe;
+        pe.setColor(QPalette::WindowText, acolor);
+        label->setPalette(pe);
+
+        label->setText(message);
+    };
+
     void updateOptions(OptionsDialog::Options options);
 
     void xmlInitLanguage(QDomElement &parentElem, QDomDocument & doc);
@@ -112,9 +120,9 @@ private:
 
 protected:
     void closeEvent(QCloseEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
 
 private:
-
     Ui::MainWindow *m_ui        = nullptr;
     QLabel *m_serialInfoStatus  = nullptr;
     QLabel *m_txBytesStatus     = nullptr;
@@ -124,7 +132,7 @@ private:
     OptionsDialog *m_options    = nullptr;
     MainWindowSettings m_currentSettings;
 
-    long m_rxCount;
-    long m_txCount;
+    ulong m_rxCount;
+    ulong m_txCount;
 };
 #endif // MAINWINDOW_H

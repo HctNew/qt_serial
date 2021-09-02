@@ -1,3 +1,4 @@
+﻿
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "console.h"
@@ -14,6 +15,14 @@
 #include <QDomDocument>
 #include <QTextStream>
 #include <QDir>
+
+static struct WidgetSize
+{
+    int firstWidth;
+    int firstHeight;
+    int secondWidth;
+    int secondHeight;
+}widgetSize;
 
 /**
  * @brief MainWindow::MainWindow
@@ -94,6 +103,7 @@ MainWindow::MainWindow(QWidget *parent):
     connect(m_ui->tableWidget,      &CustomTableWidget::commandClicked, this,   &MainWindow::tableWidgetButtonClicked);
 
     updateOptions(m_options->options());
+
 }
 
 MainWindow::~MainWindow()
@@ -240,14 +250,6 @@ void MainWindow::updateOptions(OptionsDialog::Options options)
 
 }
 
-void MainWindow::showStatusMessage(QLabel *label, const QString &message, const QColor &acolor)
-{
-    QPalette pe;
-    pe.setColor(QPalette::WindowText, acolor);
-    label->setPalette(pe);
-
-    label->setText(message);
-}
 
 void MainWindow::xmlInitLanguage(QDomElement &parentElem, QDomDocument & doc)
 {
@@ -312,6 +314,7 @@ void MainWindow::xmlInitWinCfg(QDomElement &parentElem, QDomDocument & doc)
         elem.setAttribute("y", (pDesk->height() - this->height()) / 2);
         elem.setAttribute("width", this->width());
         elem.setAttribute("height", this->height());
+        elem.setAttribute("WindowMaximized", false);
         childElem.appendChild(elem);
 
         // contextMenu
@@ -356,8 +359,35 @@ void MainWindow::xmlSaveWinCfg(QDomElement &parentElem)
 
     elem.setAttribute("x", this->pos().x());
     elem.setAttribute("y", this->pos().y());
-    elem.setAttribute("width", this->width());
-    elem.setAttribute("height", this->height());
+
+
+
+    //窗口处于最大化状态时要加判断处理
+    if(Qt::WindowMaximized == windowState())
+    {
+        //    使用std::tie替代下面的短路求值方式，比较简洁。
+        //    (widgetSize.firstWidth <= widgetSize.secondWidth &&
+        //    widgetSize.firstHeight <= widgetSize.secondHeight)
+        if ( std::tie(widgetSize.firstWidth, widgetSize.firstHeight) <=
+             std::tie(widgetSize.secondWidth, widgetSize.secondHeight) )
+        {
+            elem.setAttribute("width", widgetSize.firstWidth);
+            elem.setAttribute("height", widgetSize.firstHeight);
+        }
+        else
+        {
+            elem.setAttribute("width", widgetSize.secondWidth);
+            elem.setAttribute("height", widgetSize.secondHeight);
+        }
+        elem.setAttribute("WindowMaximized", true);
+    }
+    else
+    {
+        elem.setAttribute("width", this->width());
+        elem.setAttribute("height", this->height());
+        elem.setAttribute("WindowMaximized", false);
+    }
+
 
     nodeList = childElem.elementsByTagName("contextMenu");
     elem     = nodeList.at(0).toElement();
@@ -386,6 +416,13 @@ void MainWindow::xmlLoadWinCfg(QDomElement &parentElem)
     this->move(elem.attribute("x").toInt(), elem.attribute("y").toInt());
     this->resize(elem.attribute("width").toInt(), elem.attribute("height").toInt());
 
+    // 如果窗口设置为最大化
+    if (true == (bool)elem.attribute("WindowMaximized").toInt())
+    {
+        widgetSize = {this->width(), this->height(), this->width(), this->height()};
+        showMaximized();
+    }
+
     nodeList = childElem.elementsByTagName("contextMenu");
     elem     = nodeList.at(0).toElement();
     nodeList = elem.childNodes();
@@ -407,6 +444,28 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     qApp->quit();
 }
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    static bool bSet = true;
+
+    if (bSet)
+    {
+        widgetSize.firstWidth = this->width();
+        widgetSize.firstHeight = this->height();
+    }
+    else
+    {
+        widgetSize.secondWidth = this->width();
+        widgetSize.secondHeight = this->height();
+    }
+
+    bSet = !bSet;
+
+    QWidget::resizeEvent(event);
+}
+
+
 
 QByteArray MainWindow::str2Hex(const QString & str)
 {

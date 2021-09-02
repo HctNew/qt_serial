@@ -1,4 +1,4 @@
-#ifndef SETTINGSDIALOG_H
+﻿#ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
@@ -48,7 +48,6 @@ public:
         quint8 flowControlIndex;
         quint8 serialProtIndex;
         QString baudRateText;
-
     };
 
     explicit SettingsDialog(QWidget *parent = nullptr);

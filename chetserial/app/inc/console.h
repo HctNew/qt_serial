@@ -1,4 +1,4 @@
-#ifndef CONSOLE_H
+﻿#ifndef CONSOLE_H
 #define CONSOLE_H
 
 #include <QTextEdit>
@@ -12,7 +12,6 @@ QT_END_NAMESPACE
 class Console : public QTextEdit
 {
     Q_OBJECT
-
 
 public:
     explicit Console(QWidget *parent = nullptr);
