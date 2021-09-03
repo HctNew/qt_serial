@@ -12,8 +12,8 @@
 #include <QMessageBox>
 #include <QDir>
 
-#define XML_NODE_OPTIONS    ("options")
-#define DEFAULT_LOGPATH     ("log")
+#define XML_NODE_OPTIONS    "options"
+#define DEFAULT_LOGPATH     "log"
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
@@ -27,7 +27,9 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_currentOptions.m_textColor.setRgb(0, 0, 0);
     m_currentOptions.m_backgroundColor.setRgb(255, 255, 255);
     m_currentOptions.m_isAutoSaveLog = m_ui->autoLogcheckBox->isChecked();
-    m_currentOptions.m_logFilePath = QString(QDir::currentPath() + "/" + DEFAULT_LOGPATH);
+
+    QDir fileDir;
+    m_currentOptions.m_logFilePath = fileDir.absoluteFilePath(QStringLiteral(DEFAULT_LOGPATH));
     m_uncertainOptions = m_currentOptions;
 
     updateOptions();
